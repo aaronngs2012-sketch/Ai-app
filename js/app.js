@@ -108,6 +108,7 @@ function startShop(published) {
     products: published ? published.products : clone(PRODUCTS),
     heroImage: (published && published.heroImage) || "",
     paypal: (published && published.paypal) || "",
+    phone: (published && published.phone) || "",
     updated: (published && published.updated) || 0,
   };
   var draft = storage.get(DRAFT_KEY, null);
@@ -267,9 +268,10 @@ function startShop(published) {
         return COLORS[k] ? '<span style="background:' + COLORS[k].hex + '" title="' + COLORS[k].name + '"></span>' : "";
       }).join("") +
       "</div>" +
-      '<div class="card-foot">' +
-      '<span class="price">' + fmt(p.price) + "</span>" +
+      '<div class="card-foot"><span class="price">' + fmt(p.price) + "</span></div>" +
+      '<div class="card-buttons">' +
       '<button type="button" class="btn btn-small" data-quick-add="' + esc(p.id) + '">Add to cart</button>' +
+      '<button type="button" class="btn btn-small btn-buy" data-buy-now="' + esc(p.id) + '">Buy now</button>' +
       "</div></div></article>"
     );
   }
@@ -316,6 +318,15 @@ function startShop(published) {
     }
     var open = e.target.closest("[data-open]");
     if (open) return openProduct(open.dataset.open);
+    var buy = e.target.closest("[data-buy-now]");
+    if (buy) {
+      var item = productById(buy.dataset.buyNow);
+      if (item) {
+        addProductToCart(item.id, (item.colors || [])[0], 1);
+        goToCheckout();
+      }
+      return;
+    }
     var add = e.target.closest("[data-quick-add]");
     if (add) {
       var p = productById(add.dataset.quickAdd);
@@ -419,6 +430,18 @@ function startShop(published) {
     addProductToCart(current.product.id, current.color, clampQty(qtyInput.value));
     closeModal(modal);
   });
+  $("#modal-buy").addEventListener("click", function () {
+    addProductToCart(current.product.id, current.color, clampQty(qtyInput.value));
+    closeModal(modal);
+    goToCheckout();
+  });
+
+  // Buy now: the item is already in the cart, so jump straight to the checkout form.
+  function goToCheckout() {
+    go("cart");
+    var name = $("#co-name");
+    if (name) name.focus();
+  }
 
   /* ---------- Cart ---------- */
   // Shop lines:   { kind: "product", key, id, color, qty }
@@ -587,6 +610,34 @@ function startShop(published) {
     var body = Object.keys(fields).map(function (k) { return k + ": " + fields[k]; }).join("\n");
     window.location.href = "mailto:" + STORE.contactEmail + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
     return Promise.resolve("email");
+  }
+
+  /* ---------- Contact & hours ---------- */
+  function phoneNumber() {
+    return activeData().phone || STORE.phone || "";
+  }
+  function renderContact() {
+    $("#contact-email").textContent = STORE.contactEmail;
+    $("#contact-email-main").textContent = STORE.contactEmail;
+    var phone = phoneNumber();
+    var dial = phone.replace(/[^0-9+]/g, "");
+    $("#contact-phone-row").hidden = !phone;
+    $("#footer-phone").hidden = !phone;
+    $("#contact-phone").textContent = phone;
+    $("#footer-phone").textContent = phone;
+    $("#contact-text").href = "sms:" + dial;
+    $("#contact-call").href = "tel:" + dial;
+    $("#footer-hours").textContent = STORE.hoursSummary;
+    var today = new Date().getDay();
+    $("#hours-body").innerHTML = STORE.hours.map(function (h, i) {
+      var calls = h.closed ? "Closed" : h.calls || "No calls";
+      return (
+        '<tr class="' + (i === today ? "is-today" : "") + (h.closed ? " is-closed" : "") + '">' +
+        '<th scope="row">' + esc(h.day) + (i === today ? ' <span class="pill">Today</span>' : "") + "</th>" +
+        "<td>" + (h.closed ? "Any time, answered Sunday" : "Any time") + "</td>" +
+        '<td class="' + (h.calls ? "has-calls" : "no-calls") + '">' + esc(calls) + "</td></tr>"
+      );
+    }).join("");
   }
 
   /* ---------- Payments ---------- */
@@ -1178,7 +1229,30 @@ function startShop(published) {
     }
   });
 
+  function renderPhone() {
+    $("#phone-input").value = phoneNumber();
+  }
+  $("#phone-save").addEventListener("click", function () {
+    var input = $("#phone-input");
+    var v = input.value.trim();
+    var digits = v.replace(/[^0-9]/g, "");
+    if (v && (!/^[0-9+()\-.\s]+$/.test(v) || digits.length < 7 || digits.length > 15)) {
+      setError(input.closest(".field"), "Enter a phone number using numbers, spaces, + ( ) or -.");
+      return;
+    }
+    setError(input.closest(".field"), "");
+    if (v === phoneNumber()) {
+      toast("No change to save");
+      return;
+    }
+    if (editShop(function (data) { data.phone = v; })) {
+      renderContact();
+      toast(v ? "Phone saved. Tap Publish to website to show it." : "Phone number removed");
+    }
+  });
+
   function renderOwner() {
+    renderPhone();
     renderPayments();
     renderOwnerProducts();
     renderHeroPreview();
@@ -1217,6 +1291,7 @@ function startShop(published) {
     applyData();
     renderShop();
     renderCart();
+    renderContact();
     renderOwner();
     toast("Changes discarded");
   });
@@ -1327,7 +1402,7 @@ function startShop(published) {
 
   /* ---------- Init ---------- */
   $("#year").textContent = new Date().getFullYear();
-  $("#contact-email").textContent = STORE.contactEmail;
+  renderContact();
   setOwnerUnlocked(storage.get(OWNER_KEY, false, true) === true);
   renderShop();
   renderCart();

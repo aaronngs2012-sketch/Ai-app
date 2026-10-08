@@ -73,6 +73,42 @@
         </div>
       </section>
 
+      <section class="section" id="contact">
+        <div class="container">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Get in touch</p>
+              <h2>Contact &amp; hours</h2>
+            </div>
+          </div>
+          <div class="contact-layout">
+            <div class="panel contact-ways">
+              <h3>Message any time</h3>
+              <p class="cart-meta">Send a message any day, at any hour. We reply while we're open.</p>
+              <div class="contact-row">
+                <span class="contact-label">Email</span>
+                <span class="contact-value" id="contact-email-main"></span>
+              </div>
+              <div class="contact-row" id="contact-phone-row" hidden>
+                <span class="contact-label">Phone</span>
+                <span class="contact-value" id="contact-phone"></span>
+                <div class="button-row">
+                  <a class="btn btn-small" id="contact-text" href="#">Text</a>
+                  <a class="btn btn-small btn-buy" id="contact-call" href="#">Call</a>
+                </div>
+              </div>
+            </div>
+            <div class="panel">
+              <h3>Opening hours</h3>
+              <table class="hours">
+                <thead><tr><th scope="col">Day</th><th scope="col">Messages</th><th scope="col">Calls</th></tr></thead>
+                <tbody id="hours-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section class="section section-alt" id="faq">
         <div class="container narrow">
           <div class="section-head center">
@@ -362,6 +398,16 @@
               </details>
             </div>
 
+            <div class="panel" id="phone-panel">
+              <h3>Phone number</h3>
+              <p class="panel-intro">Customers see this in Contact &amp; hours so they can text or call you during call hours. Leave it empty to hide it.</p>
+              <div class="field">
+                <label for="phone-input">Phone number</label>
+                <input id="phone-input" type="tel" autocomplete="off" placeholder="e.g. (555) 123-4567">
+              </div>
+              <button type="button" class="btn btn-primary" id="phone-save">Save</button>
+            </div>
+
             <div class="panel" id="payments-panel">
               <h3>Get paid</h3>
               <p class="panel-intro">Customers pay you through PayPal. Your debit card stays safely inside your PayPal account and is never put on this website.</p>
@@ -480,7 +526,9 @@
       <div>
         <h4>Contact</h4>
         <p class="contact-email" id="contact-email">aaronngs2012@gmail.com</p>
-        <p>Mon–Fri, 9am–5pm</p>
+        <p class="contact-email" id="footer-phone" hidden></p>
+        <p class="footer-hours" id="footer-hours"></p>
+        <a href="#contact">Opening hours</a>
       </div>
     </div>
     <div class="container footer-bottom">
@@ -512,6 +560,7 @@
           </div>
           <button type="button" class="btn btn-primary" id="modal-add">Add to cart</button>
         </div>
+        <button type="button" class="btn btn-buy btn-block modal-buy" id="modal-buy">Buy now</button>
         <a href="#custom" class="modal-custom-link" data-close>Want it bigger, smaller or personalised? Make a custom version →</a>
       </div>
     </div>

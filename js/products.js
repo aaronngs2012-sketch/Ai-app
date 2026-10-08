@@ -12,6 +12,19 @@ var STORE = {
   flatShipping: 6.5,
   freeShippingOver: 60,
   contactEmail: "aaronngs2012@gmail.com",
+  // Phone for calls and texts. The owner can also set this on the Shop owner page.
+  phone: "",
+  // Opening hours shown on the Home page. "calls" is null on days with no calls.
+  hours: [
+    { day: "Sunday", calls: null },
+    { day: "Monday", calls: "6:30–9:30 pm" },
+    { day: "Tuesday", calls: "6:30–9:30 pm" },
+    { day: "Wednesday", calls: "6:30–9:30 pm" },
+    { day: "Thursday", calls: null },
+    { day: "Friday", calls: "1:30–5:00 pm" },
+    { day: "Saturday", closed: true },
+  ],
+  hoursSummary: "Open Sunday–Friday. Message any time. Calls Mon–Wed 6:30–9:30 pm and Fri 1:30–5:00 pm.",
   // Optional: a form endpoint (e.g. https://formspree.io/f/xxxx) that receives
   // custom-order requests and checkout orders as JSON. Leave empty to fall back
   // to opening the customer's email app with the details filled in.
