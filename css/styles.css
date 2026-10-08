@@ -5,9 +5,10 @@
   --text: #1d1f24;
   --muted: #646a75;
   --border: #e3ded5;
-  --primary: #ff5a36;
-  --primary-dark: #e2441f;
-  --primary-soft: #ffe8e1;
+  --primary: #f06a00;
+  --primary-dark: #d25a00;
+  --primary-soft: #ffecdc;
+  --glow: rgba(255, 255, 255, 0.7);
   --ink: #1d1f24;
   --success: #2f9e5b;
   --danger: #d33a2c;
@@ -27,7 +28,8 @@
     --text: #eceef1;
     --muted: #a2a8b3;
     --border: #333840;
-    --primary-soft: #3a2420;
+    --primary-soft: #3b2614;
+    --glow: rgba(255, 255, 255, 0.05);
     --ink: #eceef1;
     --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.25);
     color-scheme: dark;
@@ -41,7 +43,8 @@
   --text: #eceef1;
   --muted: #a2a8b3;
   --border: #333840;
-  --primary-soft: #3a2420;
+  --primary-soft: #3b2614;
+  --glow: rgba(255, 255, 255, 0.05);
   --ink: #eceef1;
   --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.25);
   color-scheme: dark;
@@ -51,6 +54,11 @@
 *::before,
 *::after {
   box-sizing: border-box;
+}
+
+/* Anything with the hidden attribute stays hidden, whatever its other styles say. */
+[hidden] {
+  display: none !important;
 }
 
 html {
@@ -676,7 +684,7 @@ textarea {
   cursor: pointer;
   aspect-ratio: 1;
   background:
-    radial-gradient(circle at 50% 60%, rgba(255, 255, 255, 0.7), transparent 60%),
+    radial-gradient(circle at 50% 60%, var(--glow), transparent 60%),
     var(--bg-alt);
   display: grid;
   place-items: center;
@@ -2228,4 +2236,31 @@ legend {
   border-radius: 0;
   padding-left: 2px;
   min-width: 0;
+}
+
+/* ---------- Logo ---------- */
+.logo img {
+  display: block;
+  width: auto;
+}
+
+.logo .logo-mark {
+  height: 32px;
+}
+
+.logo .logo-word {
+  height: 18px;
+}
+
+.logo-footer .logo-mark {
+  height: 40px;
+}
+
+.logo-footer .logo-word {
+  height: 22px;
+}
+
+/* ---------- Owner: add item from the shop ---------- */
+.shop-add {
+  margin-top: 14px;
 }

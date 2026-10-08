@@ -899,6 +899,7 @@ function startShop(published) {
     ownerLogin.hidden = on;
     ownerPanel.hidden = !on;
     $("#owner-lock").hidden = !on;
+    $("#shop-add").hidden = !on;
     if (on) renderOwner();
     else closeEditor();
     renderShop();
@@ -1040,6 +1041,10 @@ function startShop(published) {
     $("#owner-products").scrollIntoView();
   });
   $("#product-new").addEventListener("click", function () {
+    openEditor(null);
+  });
+  $("#shop-add").addEventListener("click", function () {
+    go("manage");
     openEditor(null);
   });
 
