@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Layerworks 3D</title>
+  <title>Modlify</title>
   <meta name="description" content="Shop 3D printed home goods, desk accessories, toys and gifts, or design your own custom print.">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Cpath d=%27M16 3 28 9.5v13L16 29 4 22.5v-13zM4 9.5 16 16l12-6.5M16 16v13%27 fill=%27none%27 stroke=%27%23ff5a36%27 stroke-width=%272.6%27 stroke-linejoin=%27round%27/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,9 +19,9 @@
   </div>
   <header class="site-header">
     <div class="container header-inner">
-      <a href="#home" class="logo" aria-label="Layerworks 3D home">
+      <a href="#home" class="logo" aria-label="Modlify home">
         <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3 28 9.5v13L16 29 4 22.5v-13z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><path d="M4 9.5 16 16l12-6.5M16 16v13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/></svg>
-        <span>Layerworks<strong>3D</strong></span>
+        <span>Mod<strong>lify</strong></span>
       </a>
       <nav class="tabs" aria-label="Main">
         <a href="#home" data-nav="home">Home</a>
@@ -361,6 +361,28 @@
               </details>
             </div>
 
+            <div class="panel" id="payments-panel">
+              <h3>Get paid</h3>
+              <p class="panel-intro">Customers pay you through PayPal. Your debit card stays safely inside your PayPal account and is never put on this website.</p>
+              <ol class="setup-steps">
+                <li>Make a free account at <a href="https://www.paypal.com/" target="_blank" rel="noopener">paypal.com</a>, then add your debit card in PayPal's <strong>Wallet</strong>. Money you receive can go to that card.</li>
+                <li>Create your PayPal.me link at <a href="https://www.paypal.com/paypalme/" target="_blank" rel="noopener">paypal.com/paypalme</a>, for example paypal.me/modlify.</li>
+                <li>Type your PayPal.me name below, tap <strong>Save</strong>, then tap <strong>Publish to website</strong>.</li>
+              </ol>
+              <div class="field">
+                <label for="pp-name">PayPal.me name</label>
+                <div class="prefix-input">
+                  <span>paypal.me/</span>
+                  <input id="pp-name" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="yourname">
+                </div>
+              </div>
+              <div class="button-row">
+                <button type="button" class="btn btn-primary" id="pp-save">Save</button>
+                <a class="btn btn-outline" id="pp-test" href="#" target="_blank" rel="noopener" hidden>Check my PayPal link</a>
+              </div>
+              <p class="form-note">PayPal only lets people 18 or older open an account. If you're younger, a parent or guardian can open it and add their card.</p>
+            </div>
+
             <form class="panel" id="product-form" novalidate hidden>
               <h3 id="editor-title">Edit product</h3>
               <div class="field">
@@ -444,7 +466,7 @@
       <div>
         <a href="#home" class="logo logo-footer">
           <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3 28 9.5v13L16 29 4 22.5v-13z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><path d="M4 9.5 16 16l12-6.5M16 16v13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/></svg>
-          <span>Layerworks<strong>3D</strong></span>
+          <span>Mod<strong>lify</strong></span>
         </a>
         <p>Small-batch 3D printing studio.<br>Designed &amp; printed with care.</p>
       </div>
@@ -457,12 +479,12 @@
       </div>
       <div>
         <h4>Contact</h4>
-        <p class="contact-email" id="contact-email">hello@example.com</p>
+        <p class="contact-email" id="contact-email">aaronngs2012@gmail.com</p>
         <p>Mon–Fri, 9am–5pm</p>
       </div>
     </div>
     <div class="container footer-bottom">
-      <p>&copy; <span id="year"></span> Layerworks 3D. All rights reserved.</p>
+      <p>&copy; <span id="year"></span> Modlify. All rights reserved.</p>
       <a href="#manage" class="owner-link">Shop owner</a>
     </div>
   </footer>

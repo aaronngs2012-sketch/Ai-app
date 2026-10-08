@@ -11,7 +11,7 @@ var STORE = {
   currency: "USD",
   flatShipping: 6.5,
   freeShippingOver: 60,
-  contactEmail: "hello@example.com",
+  contactEmail: "aaronngs2012@gmail.com",
   // Optional: a form endpoint (e.g. https://formspree.io/f/xxxx) that receives
   // custom-order requests and checkout orders as JSON. Leave empty to fall back
   // to opening the customer's email app with the details filled in.

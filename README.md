@@ -1,4 +1,4 @@
-# Layerworks 3D — 3D Print Shop Website
+# Modlify — 3D Print Shop Website
 
 A static storefront for selling 3D printed items, with a dedicated **custom order** section. Plain HTML, CSS and JavaScript — no build step, no dependencies.
 
@@ -16,6 +16,10 @@ The site has five tabs across the top: **Home**, **Shop**, **Custom**, **Cart** 
   - change any product's photo (chosen from Photos on a phone), name, price, category, description, details, colours, badge and whether it's featured
   - add or delete products
   - change the home page banner picture
+
+### Getting paid
+
+Under the owner PIN, **Get paid** stores the owner's PayPal.me name (never card details). Once it's published, checkout for shop-only orders shows a **Pay with PayPal** button that opens `paypal.me/<name>/<total>USD`, and each order in the Orders tab has the same link. Orders that include custom items don't get the button; the owner confirms the price by email first.
 
 ### Publishing changes
 

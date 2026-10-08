@@ -1,5 +1,5 @@
 /*
- * Layerworks 3D storefront.
+ * Modlify storefront.
  * Written to run on older phones and browsers as well as new ones: no async/await,
  * object spread, optional catch bindings or other recent syntax.
  */
@@ -107,6 +107,7 @@ function startShop(published) {
   var base = {
     products: published ? published.products : clone(PRODUCTS),
     heroImage: (published && published.heroImage) || "",
+    paypal: (published && published.paypal) || "",
     updated: (published && published.updated) || 0,
   };
   var draft = storage.get(DRAFT_KEY, null);
@@ -361,7 +362,7 @@ function startShop(published) {
     $("#message-actions").innerHTML = actions.map(function (a) {
       var cls = "btn btn-block " + (a.primary ? "btn-primary" : "btn-outline");
       return a.href
-        ? '<a class="' + cls + '" href="' + a.href + '" data-close>' + esc(a.label) + "</a>"
+        ? '<a class="' + cls + '" href="' + esc(a.href) + '"' + (a.external ? ' target="_blank" rel="noopener"' : "") + " data-close>" + esc(a.label) + "</a>"
         : '<button type="button" class="' + cls + '" data-close>' + esc(a.label) + "</button>";
     }).join("");
     openModal($("#message-modal"));
@@ -588,11 +589,24 @@ function startShop(published) {
     return Promise.resolve("email");
   }
 
+  /* ---------- Payments ---------- */
+  function paypalName() {
+    return activeData().paypal || "";
+  }
+  // A PayPal.me link that opens PayPal with the amount already filled in.
+  function paypalLink(amount) {
+    return "https://paypal.me/" + encodeURIComponent(paypalName()) + "/" + amount.toFixed(2) + STORE.currency;
+  }
+  // Shop-only orders can be paid straight away; custom items are priced by the owner first.
+  function canPayNow(order) {
+    return !!paypalName() && !order.items.some(function (it) { return it.custom; });
+  }
+
   /* ---------- Orders ---------- */
   var orders = storage.get("lw3d-orders", []);
 
   function newOrderNumber() {
-    return "LW-" + String(Date.now()).slice(-6);
+    return "MOD-" + String(Date.now()).slice(-6);
   }
 
   function renderOrders() {
@@ -628,6 +642,7 @@ function startShop(published) {
         "<div><span>Shipping</span><span>" + (o.shipping === 0 ? "Free" : fmt(o.shipping)) + "</span></div>" +
         '<div class="total"><span>Total</span><span>' + fmt(o.total) + "</span></div></div>" +
         '<p class="cart-meta">Shipping to ' + esc(o.customer.name) + ", " + esc(o.customer.address) + "</p>" +
+        (canPayNow(o) ? '<a class="btn btn-primary btn-block" href="' + esc(paypalLink(o.total)) + '" target="_blank" rel="noopener">Pay ' + fmt(o.total) + " with PayPal</a>" : "") +
         "</article>"
       );
     }).join("");
@@ -678,11 +693,19 @@ function startShop(published) {
             ? "This shop isn't taking real orders yet, so nothing was sent and you won't be charged."
             : how === "sent"
             ? "We've received your order and will email <strong>" + esc(data.email) + "</strong> a payment link shortly."
+            : paypalName()
+            ? "Your email app should open with your order details. Send that email so we know what to make and where to ship it."
             : "Your email app should open with your order details. Send that email and we'll reply with a payment link.";
-        showMessage("Order " + order.number + " placed", "<p>" + msg + "</p>", [
-          { label: "View my orders", href: "#orders", primary: true },
-          { label: "Keep shopping", href: "#shop" },
-        ]);
+        var actions = [];
+        if (how !== "preview" && canPayNow(order)) {
+          msg += " Then tap the PayPal button to pay.";
+          actions.push({ label: "Pay " + fmt(order.total) + " with PayPal", href: paypalLink(order.total), external: true, primary: true });
+        } else if (how !== "preview" && paypalName()) {
+          msg += " We'll check your custom item and email you the final price with a PayPal link.";
+        }
+        actions.push({ label: "View my orders", href: "#orders", primary: !actions.length });
+        actions.push({ label: "Keep shopping", href: "#shop" });
+        showMessage("Order " + order.number + " placed", "<p>" + msg + "</p>", actions);
       })
       .catch(function () {
         toast("Your order couldn't be sent. Check your connection and try again.");
@@ -1127,7 +1150,31 @@ function startShop(published) {
     $("#gh-summary").textContent = has ? "Publishing is set up ✓ (change token)" : "Set up publishing (one time)";
     $("#gh-forget").hidden = !has;
   }
+  function renderPayments() {
+    var name = paypalName();
+    $("#pp-name").value = name;
+    $("#pp-test").hidden = !name;
+    if (name) $("#pp-test").href = "https://paypal.me/" + encodeURIComponent(name);
+  }
+  $("#pp-save").addEventListener("click", function () {
+    var input = $("#pp-name");
+    var v = input.value.trim().replace(/^.*paypal\.me\//i, "").replace(/\/.*$/, "");
+    if (v && !/^[A-Za-z0-9]{1,20}$/.test(v)) {
+      setError(input.closest(".field"), "Use only the letters and numbers after paypal.me/, for example modlify.");
+      return;
+    }
+    setError(input.closest(".field"), "");
+    if (v === paypalName()) {
+      toast("No change to save");
+      return;
+    }
+    if (editShop(function (data) { data.paypal = v; })) {
+      toast(v ? "PayPal saved. Tap Publish to website to turn it on." : "PayPal removed");
+    }
+  });
+
   function renderOwner() {
+    renderPayments();
     renderOwnerProducts();
     renderHeroPreview();
     renderPublish();

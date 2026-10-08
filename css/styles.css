@@ -2200,3 +2200,32 @@ legend {
     max-height: 300px;
   }
 }
+
+/* ---------- Get paid ---------- */
+.panel-intro {
+  color: var(--muted);
+}
+
+.prefix-input {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  overflow: hidden;
+}
+
+.prefix-input span {
+  display: flex;
+  align-items: center;
+  padding: 0 4px 0 14px;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.field .prefix-input input:not([type="radio"]):not([type="file"]) {
+  border: 0;
+  border-radius: 0;
+  padding-left: 2px;
+  min-width: 0;
+}
