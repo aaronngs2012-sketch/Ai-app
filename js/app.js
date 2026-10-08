@@ -52,6 +52,40 @@
     })
   );
 
+  /* ---------- Tabs ---------- */
+  // Each tab is a [data-view] block; the URL hash picks which one is shown.
+  // A hash naming an element inside a tab (e.g. #faq) opens that tab and scrolls to it.
+  const VIEWS = $$("[data-view]").map((v) => v.dataset.view);
+  const VIEW_TITLES = { home: "Home", shop: "Shop", custom: "Custom Orders", cart: "Cart" };
+  const baseTitle = document.title;
+
+  function route() {
+    const hash = decodeURIComponent(location.hash.slice(1));
+    let view = VIEWS.includes(hash) ? hash : "home";
+    let target = null;
+    if (hash && !VIEWS.includes(hash)) {
+      target = document.getElementById(hash);
+      const owner = target && target.closest("[data-view]");
+      if (owner) view = owner.dataset.view;
+    }
+    $$("[data-view]").forEach((v) => (v.hidden = v.dataset.view !== view));
+    $$("[data-nav]").forEach((a) => {
+      const on = a.dataset.nav === view;
+      a.classList.toggle("active", on);
+      if (on) a.setAttribute("aria-current", "page");
+      else a.removeAttribute("aria-current");
+    });
+    document.title = view === "home" ? baseTitle : `${VIEW_TITLES[view]} · ${baseTitle}`;
+    if (target) target.scrollIntoView();
+    else window.scrollTo({ top: 0, behavior: "instant" });
+  }
+  window.addEventListener("hashchange", route);
+  // Clicking the tab you're already on doesn't fire hashchange, so re-run the route to jump back to its top.
+  document.addEventListener("click", (e) => {
+    const a = e.target.closest('a[href^="#"]');
+    if (a && a.getAttribute("href") === location.hash) route();
+  });
+
   /* ---------- Shop ---------- */
   const state = { category: "all", query: "", sort: "featured" };
 
@@ -78,8 +112,14 @@
   function renderProducts() {
     const list = visibleProducts();
     $("#empty-state").hidden = list.length > 0;
-    $("#product-grid").innerHTML = list
-      .map((p) => {
+    $("#product-grid").innerHTML = list.map(cardHtml).join("");
+  }
+
+  function renderFeatured() {
+    $("#featured-grid").innerHTML = PRODUCTS.filter((p) => p.badge).slice(0, 4).map(cardHtml).join("");
+  }
+
+  function cardHtml(p) {
         const cat = CATEGORIES.find((c) => c.id === p.category);
         return `
         <article class="card" data-id="${p.id}">
@@ -99,8 +139,6 @@
             </div>
           </div>
         </article>`;
-      })
-      .join("");
   }
 
   $("#filters").addEventListener("click", (e) => {
@@ -118,7 +156,7 @@
     state.sort = e.target.value;
     renderProducts();
   });
-  $("#product-grid").addEventListener("click", (e) => {
+  const onGridClick = (e) => {
     const open = e.target.closest("[data-open]");
     if (open) return openProduct(open.dataset.open);
     const add = e.target.closest("[data-quick-add]");
@@ -126,7 +164,9 @@
       const p = PRODUCTS.find((x) => x.id === add.dataset.quickAdd);
       addToCart(p.id, p.colors[0], 1);
     }
-  });
+  };
+  $("#product-grid").addEventListener("click", onGridClick);
+  $("#featured-grid").addEventListener("click", onGridClick);
 
   /* ---------- Modals ---------- */
   let lastFocus = null;
@@ -141,7 +181,7 @@
   function closeModal(el) {
     el.classList.remove("show");
     el.hidden = true;
-    if (!$$(".modal").some((m) => !m.hidden) && !drawer.classList.contains("open")) {
+    if (!$$(".modal").some((m) => !m.hidden)) {
       document.body.classList.remove("no-scroll");
     }
     if (lastFocus) lastFocus.focus();
@@ -154,7 +194,6 @@
   document.addEventListener("keydown", (e) => {
     if (e.key !== "Escape") return;
     $$(".modal").filter((m) => !m.hidden).forEach(closeModal);
-    if (drawer.classList.contains("open")) closeCart();
   });
 
   /* ---------- Product modal ---------- */
@@ -205,8 +244,6 @@
 
   /* ---------- Cart ---------- */
   let cart = storage.get("lw3d-cart", []).filter((i) => PRODUCTS.some((p) => p.id === i.id) && COLORS[i.color]);
-  const drawer = $("#cart-drawer");
-  const overlay = $("#overlay");
 
   const lineKey = (id, color) => `${id}:${color}`;
   const subtotal = () => cart.reduce((s, i) => s + PRODUCTS.find((p) => p.id === i.id).price * i.qty, 0);
@@ -234,10 +271,15 @@
     const count = cart.reduce((s, i) => s + i.qty, 0);
     $("#cart-count").textContent = count;
     $("#cart-count").classList.toggle("visible", count > 0);
+    $$("[data-cart-count]").forEach((el) => {
+      el.textContent = count;
+      el.hidden = count === 0;
+    });
+    $("#cart-layout").classList.toggle("is-empty", cart.length === 0);
 
     const body = $("#cart-items");
     if (!cart.length) {
-      body.innerHTML = `<div class="cart-empty"><p>Your cart is empty.</p><a href="#shop" class="btn btn-outline" data-close-cart>Browse products</a></div>`;
+      body.innerHTML = `<div class="cart-empty"><p>Your cart is empty.</p><a href="#shop" class="btn btn-primary">Browse products</a></div>`;
     } else {
       body.innerHTML = cart
         .map((i) => {
@@ -271,11 +313,9 @@
     const remaining = STORE.freeShippingOver - sub;
     $("#ship-note").textContent =
       sub === 0 ? "" : remaining > 0 ? `Add ${fmt(remaining)} more for free shipping.` : "You've unlocked free shipping!";
-    $("#checkout-btn").disabled = cart.length === 0;
   }
 
   $("#cart-items").addEventListener("click", (e) => {
-    if (e.target.closest("[data-close-cart]")) return closeCart();
     const line = e.target.closest(".cart-line");
     if (!line) return;
     const item = cart.find((i) => lineKey(i.id, i.color) === line.dataset.key);
@@ -287,24 +327,6 @@
     saveCart();
   });
 
-  function openCart() {
-    drawer.classList.add("open");
-    drawer.setAttribute("aria-hidden", "false");
-    overlay.hidden = false;
-    requestAnimationFrame(() => overlay.classList.add("show"));
-    document.body.classList.add("no-scroll");
-    $("#cart-close").focus();
-  }
-  function closeCart() {
-    drawer.classList.remove("open");
-    drawer.setAttribute("aria-hidden", "true");
-    overlay.classList.remove("show");
-    overlay.hidden = true;
-    if (!$$(".modal").some((m) => !m.hidden)) document.body.classList.remove("no-scroll");
-  }
-  $("#cart-open").addEventListener("click", openCart);
-  $("#cart-close").addEventListener("click", closeCart);
-  overlay.addEventListener("click", closeCart);
 
   /* ---------- Sending orders & quotes ---------- */
   // Posts to STORE.formEndpoint if configured, otherwise opens a pre-filled email.
@@ -333,41 +355,11 @@
   }
 
   /* ---------- Checkout ---------- */
-  $("#checkout-btn").addEventListener("click", () => {
-    if (!cart.length) return;
-    closeCart();
-    const sub = subtotal();
-    const ship = shipping(sub);
-    const lines = cart
-      .map((i) => {
-        const p = PRODUCTS.find((x) => x.id === i.id);
-        return `<li><span>${i.qty} × ${p.name} <small>(${COLORS[i.color].name})</small></span><span>${fmt(p.price * i.qty)}</span></li>`;
-      })
-      .join("");
-    showMessage(
-      "Review your order",
-      `<ul class="summary-list">${lines}</ul>
-       <div class="totals">
-         <div><span>Shipping</span><span>${ship === 0 ? "Free" : fmt(ship)}</span></div>
-         <div class="total"><span>Total</span><span>${fmt(sub + ship)}</span></div>
-       </div>
-       <form id="checkout-form" class="checkout-form" novalidate>
-         <div class="field"><label for="co-name">Full name</label><input id="co-name" name="name" autocomplete="name" required></div>
-         <div class="field"><label for="co-email">Email</label><input id="co-email" type="email" name="email" autocomplete="email" required></div>
-         <div class="field"><label for="co-address">Shipping address</label><textarea id="co-address" name="address" rows="3" autocomplete="street-address" required></textarea></div>
-         <div class="field"><label for="co-notes">Order notes <span class="optional">(e.g. keychain name)</span></label><input id="co-notes" name="notes"></div>
-         <button class="btn btn-primary btn-block" type="submit">Place order</button>
-         <p class="form-note">We'll email a secure payment link to confirm your order.</p>
-       </form>`
-    );
-    $("#message-modal .message-icon").hidden = true;
-    $("#message-modal .modal-card > .btn").hidden = true;
-  });
-
-  document.addEventListener("submit", async (e) => {
-    if (e.target.id !== "checkout-form") return;
+  const checkoutForm = $("#checkout-form");
+  checkoutForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const form = e.target;
+    const form = checkoutForm;
+    if (!cart.length) return;
     if (!validate(form)) return;
     const data = Object.fromEntries(new FormData(form));
     const sub = subtotal();
@@ -389,7 +381,7 @@
       });
       cart = [];
       saveCart();
-      closeModal($("#message-modal"));
+      form.reset();
       showMessage(
         "Thanks for your order!",
         how === "preview"
@@ -398,19 +390,11 @@
           ? `<p>We've received your order and will email <strong>${escapeHtml(data.email)}</strong> a payment link shortly.</p>`
           : `<p>Your email app should open with your order details — just hit send and we'll reply with a payment link.</p>`
       );
-      resetMessageModal();
     } catch (err) {
-      btn.disabled = false;
       toast("Sorry, something went wrong. Please try again.");
+    } finally {
+      btn.disabled = false;
     }
-  });
-
-  function resetMessageModal() {
-    $("#message-modal .message-icon").hidden = false;
-    $("#message-modal .modal-card > .btn").hidden = false;
-  }
-  $("#message-modal").addEventListener("click", (e) => {
-    if (e.target === e.currentTarget || e.target.closest("[data-close]")) resetMessageModal();
   });
 
   /* ---------- Validation ---------- */
@@ -565,6 +549,8 @@
   $("#year").textContent = new Date().getFullYear();
   renderFilters();
   renderProducts();
+  renderFeatured();
   renderCart();
+  route();
   updateEstimate();
 })();

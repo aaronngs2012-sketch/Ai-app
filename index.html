@@ -14,21 +14,21 @@
 <body>
   <header class="site-header">
     <div class="container header-inner">
-      <a href="#top" class="logo" aria-label="Layerworks 3D home">
+      <a href="#home" class="logo" aria-label="Layerworks 3D home">
         <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3 28 9.5v13L16 29 4 22.5v-13z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><path d="M4 9.5 16 16l12-6.5M16 16v13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/></svg>
         <span>Layerworks<strong>3D</strong></span>
       </a>
       <nav class="main-nav" id="main-nav" aria-label="Main">
-        <a href="#shop">Shop</a>
-        <a href="#custom">Custom Orders</a>
-        <a href="#how">How It Works</a>
-        <a href="#faq">FAQ</a>
+        <a href="#home" data-nav="home">Home</a>
+        <a href="#shop" data-nav="shop">Shop</a>
+        <a href="#custom" data-nav="custom">Custom Orders</a>
+        <a href="#cart" data-nav="cart">Cart <span class="nav-count" data-cart-count>0</span></a>
       </nav>
       <div class="header-actions">
-        <button class="cart-btn" id="cart-open" aria-label="Open cart">
+        <a href="#cart" class="cart-btn" id="cart-open" aria-label="View cart">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.4 11.2a1 1 0 0 0 1 .8h9.2a1 1 0 0 0 1-.8L21 8H6.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="20" r="1.5" fill="currentColor"/><circle cx="18" cy="20" r="1.5" fill="currentColor"/></svg>
           <span class="cart-count" id="cart-count">0</span>
-        </button>
+        </a>
         <button class="menu-btn" id="menu-btn" aria-label="Toggle menu" aria-expanded="false" aria-controls="main-nav">
           <span></span><span></span><span></span>
         </button>
@@ -36,7 +36,9 @@
     </div>
   </header>
 
-  <main id="top">
+  <main>
+    <!-- ===== Home tab ===== -->
+    <div class="view" data-view="home">
     <!-- Hero -->
     <section class="hero">
       <div class="container hero-inner">
@@ -67,8 +69,73 @@
       </div>
     </section>
 
-    <!-- Shop -->
-    <section class="section" id="shop">
+
+    <!-- Featured products -->
+    <section class="section">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Customer favourites</p>
+            <h2>Featured prints</h2>
+          </div>
+          <a href="#shop" class="btn btn-outline">See all products</a>
+        </div>
+        <div class="product-grid" id="featured-grid"></div>
+      </div>
+    </section>
+
+    <!-- Custom teaser -->
+    <section class="section section-tight">
+      <div class="container">
+        <div class="teaser">
+          <div>
+            <p class="eyebrow">Made just for you</p>
+            <h2>Can't find it? We'll print it.</h2>
+            <p>Send us an STL file, a sketch or a broken part. You get a firm quote within 24 hours and pay nothing until you approve it.</p>
+          </div>
+          <a href="#custom" class="btn btn-primary">Start a custom order</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section section-alt" id="faq">
+      <div class="container narrow">
+        <div class="section-head center">
+          <div>
+            <p class="eyebrow">Questions?</p>
+            <h2>Frequently asked</h2>
+          </div>
+        </div>
+        <div class="faq">
+          <details>
+            <summary>What materials do you print with?</summary>
+            <p>Mostly PLA (great all-rounder), PETG (stronger and heat resistant), TPU (flexible and rubbery) and resin (very fine detail for miniatures and jewellery). Not sure which you need? Pick “Not sure” on the custom form and we'll advise.</p>
+          </details>
+          <details>
+            <summary>How long does shipping take?</summary>
+            <p>Shop items ship within 1–2 business days. Custom orders typically ship 3–5 business days after you approve the quote. Rush options are available.</p>
+          </details>
+          <details>
+            <summary>I don't have a 3D file. Can you still help?</summary>
+            <p>Yes! Send photos, a sketch with measurements, or the broken part's dimensions and we can model it for you. Design time is included in your quote.</p>
+          </details>
+          <details>
+            <summary>Can I change the colour of a shop item?</summary>
+            <p>Most shop items let you choose a colour before adding to cart. For colours not listed, use the custom order form and choose “Personalise a shop item”.</p>
+          </details>
+          <details>
+            <summary>What is your returns policy?</summary>
+            <p>Shop items can be returned within 30 days in original condition. Custom items are made to order and can't be returned, but if something arrives damaged or doesn't match the approved quote we'll reprint it free.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+    </div>
+
+    <!-- ===== Shop tab ===== -->
+    <div class="view" data-view="shop" hidden>
+    <section class="section">
       <div class="container">
         <div class="section-head">
           <div>
@@ -94,8 +161,11 @@
       </div>
     </section>
 
-    <!-- Custom orders -->
-    <section class="section section-alt" id="custom">
+    </div>
+
+    <!-- ===== Custom orders tab ===== -->
+    <div class="view" data-view="custom" hidden>
+    <section class="section">
       <div class="container custom-layout">
         <div class="custom-intro">
           <p class="eyebrow">Made just for you</p>
@@ -223,7 +293,7 @@
     </section>
 
     <!-- How it works -->
-    <section class="section" id="how">
+    <section class="section section-alt" id="how">
       <div class="container">
         <div class="section-head center">
           <div>
@@ -240,45 +310,48 @@
       </div>
     </section>
 
-    <!-- FAQ -->
-    <section class="section section-alt" id="faq">
-      <div class="container narrow">
-        <div class="section-head center">
+    </div>
+
+    <!-- ===== Cart tab ===== -->
+    <div class="view" data-view="cart" hidden>
+    <section class="section">
+      <div class="container">
+        <div class="section-head">
           <div>
-            <p class="eyebrow">Questions?</p>
-            <h2>Frequently asked</h2>
+            <p class="eyebrow">Checkout</p>
+            <h2>Your cart</h2>
           </div>
+          <a href="#shop" class="btn btn-outline">Continue shopping</a>
         </div>
-        <div class="faq">
-          <details>
-            <summary>What materials do you print with?</summary>
-            <p>Mostly PLA (great all-rounder), PETG (stronger and heat resistant), TPU (flexible and rubbery) and resin (very fine detail for miniatures and jewellery). Not sure which you need? Pick “Not sure” on the custom form and we'll advise.</p>
-          </details>
-          <details>
-            <summary>How long does shipping take?</summary>
-            <p>Shop items ship within 1–2 business days. Custom orders typically ship 3–5 business days after you approve the quote. Rush options are available.</p>
-          </details>
-          <details>
-            <summary>I don't have a 3D file. Can you still help?</summary>
-            <p>Yes! Send photos, a sketch with measurements, or the broken part's dimensions and we can model it for you. Design time is included in your quote.</p>
-          </details>
-          <details>
-            <summary>Can I change the colour of a shop item?</summary>
-            <p>Most shop items let you choose a colour before adding to cart. For colours not listed, use the custom order form and choose “Personalise a shop item”.</p>
-          </details>
-          <details>
-            <summary>What is your returns policy?</summary>
-            <p>Shop items can be returned within 30 days in original condition. Custom items are made to order and can't be returned, but if something arrives damaged or doesn't match the approved quote we'll reprint it free.</p>
-          </details>
+        <div class="cart-layout" id="cart-layout">
+          <div class="cart-panel" id="cart-items"></div>
+          <aside class="summary-panel" aria-label="Order summary">
+            <h3>Order summary</h3>
+            <div class="totals">
+              <div><span>Subtotal</span><span id="cart-subtotal">$0.00</span></div>
+              <div><span>Shipping</span><span id="cart-shipping">$0.00</span></div>
+              <div class="total"><span>Total</span><span id="cart-total">$0.00</span></div>
+            </div>
+            <p class="ship-note" id="ship-note"></p>
+            <form id="checkout-form" class="checkout-form" novalidate>
+              <div class="field"><label for="co-name">Full name</label><input id="co-name" name="name" autocomplete="name" required></div>
+              <div class="field"><label for="co-email">Email</label><input id="co-email" type="email" name="email" autocomplete="email" required></div>
+              <div class="field"><label for="co-address">Shipping address</label><textarea id="co-address" name="address" rows="3" autocomplete="street-address" required></textarea></div>
+              <div class="field"><label for="co-notes">Order notes <span class="optional">(e.g. keychain name)</span></label><input id="co-notes" name="notes"></div>
+              <button class="btn btn-primary btn-block" type="submit">Place order</button>
+              <p class="form-note">We'll email a secure payment link to confirm your order.</p>
+            </form>
+          </aside>
         </div>
       </div>
     </section>
+    </div>
   </main>
 
   <footer class="site-footer">
     <div class="container footer-inner">
       <div>
-        <a href="#top" class="logo logo-footer">
+        <a href="#home" class="logo logo-footer">
           <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3 28 9.5v13L16 29 4 22.5v-13z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><path d="M4 9.5 16 16l12-6.5M16 16v13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/></svg>
           <span>Layerworks<strong>3D</strong></span>
         </a>
@@ -301,24 +374,6 @@
     </div>
   </footer>
 
-  <!-- Cart drawer -->
-  <div class="overlay" id="overlay" hidden></div>
-  <aside class="drawer" id="cart-drawer" aria-label="Shopping cart" aria-hidden="true">
-    <div class="drawer-head">
-      <h3>Your cart</h3>
-      <button class="icon-btn" id="cart-close" aria-label="Close cart">&times;</button>
-    </div>
-    <div class="drawer-body" id="cart-items"></div>
-    <div class="drawer-foot">
-      <div class="totals">
-        <div><span>Subtotal</span><span id="cart-subtotal">$0.00</span></div>
-        <div><span>Shipping</span><span id="cart-shipping">$0.00</span></div>
-        <div class="total"><span>Total</span><span id="cart-total">$0.00</span></div>
-      </div>
-      <p class="ship-note" id="ship-note"></p>
-      <button class="btn btn-primary btn-block" id="checkout-btn">Checkout</button>
-    </div>
-  </aside>
 
   <!-- Product modal -->
   <div class="modal" id="product-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" hidden>
