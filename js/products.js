@@ -17,6 +17,10 @@ const STORE = {
   formEndpoint: "",
   // When true, forms show a confirmation without sending anything (for demos).
   previewMode: false,
+  // PIN for the "Shop owner" page (footer link) where you add products.
+  // This only hides the page from casual visitors — it is not real security,
+  // since anyone can read this file. Change it from the default.
+  ownerPin: "1234",
 };
 
 const COLORS = {
@@ -242,11 +246,25 @@ const ART = {
     <path d="M69 43l62 36M131 43 69 79M69 79v68M131 79v68M38 96l62 36 62-36" stroke="#fff" stroke-opacity=".45" stroke-width="3" fill="none"/>`,
 };
 
+// Generic art for custom items and owner-added products without a photo.
+ART.custom = (c) => `
+    <path d="M100 30 160 64v72l-60 34-60-34V64z" fill="${c}"/>
+    <path d="M100 98 160 64M100 98 40 64M100 98v72" stroke="#fff" stroke-opacity=".6" stroke-width="4"/>
+    <path d="M100 98 160 64v72l-60 34z" fill="#000" fill-opacity=".16"/>
+    <path d="M150 26l6 14 14 6-14 6-6 14-6-14-14-6 14-6z" fill="#f4c430"/>`;
+
+function escapeHtml(s) {
+  return String(s == null ? "" : s).replace(/[&<>"']/g, function (ch) {
+    return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch];
+  });
+}
+
 function productArt(product, colorKey) {
-  const hex = (COLORS[colorKey] || COLORS[product.colors[0]]).hex;
+  const color = COLORS[colorKey] || COLORS[(product.colors || [])[0]] || COLORS.grey;
+  const name = escapeHtml(product.name);
   if (product.image) {
-    return `<img src="${product.image}" alt="${product.name}" loading="lazy">`;
+    return `<img src="${escapeHtml(product.image)}" alt="${name}" loading="lazy">`;
   }
-  const draw = ART[product.art] || ART.cube;
-  return `<svg viewBox="0 0 200 200" role="img" aria-label="${product.name}">${draw(hex)}</svg>`;
+  const draw = ART[product.art] || ART.custom;
+  return `<svg viewBox="0 0 200 200" role="img" aria-label="${name}">${draw(color.hex)}</svg>`;
 }

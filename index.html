@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Layerworks 3D — Printed Goods & Custom Prints</title>
-  <meta name="description" content="Shop 3D printed home goods, desk accessories, toys and gifts, or request a fully custom print.">
+  <title>Layerworks 3D</title>
+  <meta name="description" content="Shop 3D printed home goods, desk accessories, toys and gifts, or design your own custom print.">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Cpath d=%27M16 3 28 9.5v13L16 29 4 22.5v-13zM4 9.5 16 16l12-6.5M16 16v13%27 fill=%27none%27 stroke=%27%23ff5a36%27 stroke-width=%272.6%27 stroke-linejoin=%27round%27/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,333 +18,386 @@
         <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3 28 9.5v13L16 29 4 22.5v-13z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><path d="M4 9.5 16 16l12-6.5M16 16v13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/></svg>
         <span>Layerworks<strong>3D</strong></span>
       </a>
-      <nav class="main-nav" id="main-nav" aria-label="Main">
+      <nav class="tabs" aria-label="Main">
         <a href="#home" data-nav="home">Home</a>
         <a href="#shop" data-nav="shop">Shop</a>
-        <a href="#custom" data-nav="custom">Custom Orders</a>
-        <a href="#cart" data-nav="cart">Cart <span class="nav-count" data-cart-count>0</span></a>
+        <a href="#custom" data-nav="custom">Custom</a>
+        <a href="#cart" data-nav="cart" id="cart-tab">Cart <span class="nav-count" data-cart-count hidden>0</span></a>
+        <a href="#orders" data-nav="orders">Orders</a>
       </nav>
-      <div class="header-actions">
-        <a href="#cart" class="cart-btn" id="cart-open" aria-label="View cart">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.4 11.2a1 1 0 0 0 1 .8h9.2a1 1 0 0 0 1-.8L21 8H6.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="20" r="1.5" fill="currentColor"/><circle cx="18" cy="20" r="1.5" fill="currentColor"/></svg>
-          <span class="cart-count" id="cart-count">0</span>
-        </a>
-        <button class="menu-btn" id="menu-btn" aria-label="Toggle menu" aria-expanded="false" aria-controls="main-nav">
-          <span></span><span></span><span></span>
-        </button>
-      </div>
     </div>
   </header>
 
   <main>
-    <!-- ===== Home tab ===== -->
+    <!-- ===== Home ===== -->
     <div class="view" data-view="home">
-    <!-- Hero -->
-    <section class="hero">
-      <div class="container hero-inner">
-        <div class="hero-copy">
-          <p class="eyebrow">Printed layer by layer, finished by hand</p>
-          <h1>Useful, fun &amp; one-of-a-kind <span class="accent">3D printed</span> goods.</h1>
-          <p class="lead">Browse ready-to-ship designs or send us your idea — we'll turn your model, sketch, or broken part into a real object.</p>
-          <div class="hero-ctas">
-            <a href="#shop" class="btn btn-primary">Shop the collection</a>
-            <a href="#custom" class="btn btn-outline">Start a custom order</a>
-          </div>
-          <ul class="hero-stats">
-            <li><strong>12+</strong><span>materials</span></li>
-            <li><strong>3–5 day</strong><span>turnaround</span></li>
-            <li><strong>0.1 mm</strong><span>layer detail</span></li>
-          </ul>
-        </div>
-        <div class="hero-art" aria-hidden="true">
-          <div class="printer">
-            <div class="printer-frame"></div>
-            <div class="printer-gantry"><div class="printer-head"></div></div>
-            <div class="printer-object">
-              <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+      <section class="hero">
+        <div class="container hero-inner">
+          <div class="hero-copy">
+            <p class="eyebrow">Printed layer by layer, finished by hand</p>
+            <h1>Useful, fun &amp; one-of-a-kind <span class="accent">3D printed</span> goods.</h1>
+            <p class="lead">Browse ready-to-ship designs or design your own custom print. Pick the size, material and colour, and we'll make it for you.</p>
+            <div class="hero-ctas">
+              <a href="#shop" class="btn btn-primary">Shop the collection</a>
+              <a href="#custom" class="btn btn-outline">Make a custom item</a>
             </div>
-            <div class="printer-bed"></div>
+            <ul class="hero-stats">
+              <li><strong>12+</strong><span>colours</span></li>
+              <li><strong>3–5 day</strong><span>turnaround</span></li>
+              <li><strong>0.1 mm</strong><span>layer detail</span></li>
+            </ul>
+          </div>
+          <div class="hero-art" aria-hidden="true">
+            <div class="printer">
+              <div class="printer-frame"></div>
+              <div class="printer-gantry"><div class="printer-head"></div></div>
+              <div class="printer-object">
+                <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+              </div>
+              <div class="printer-bed"></div>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-
-    <!-- Featured products -->
-    <section class="section">
-      <div class="container">
-        <div class="section-head">
-          <div>
-            <p class="eyebrow">Customer favourites</p>
-            <h2>Featured prints</h2>
+      <section class="section">
+        <div class="container">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Customer favourites</p>
+              <h2>Featured prints</h2>
+            </div>
+            <a href="#shop" class="btn btn-outline">See all products</a>
           </div>
-          <a href="#shop" class="btn btn-outline">See all products</a>
+          <div class="product-grid" id="featured-grid"></div>
         </div>
-        <div class="product-grid" id="featured-grid"></div>
-      </div>
-    </section>
+      </section>
 
-    <!-- Custom teaser -->
-    <section class="section section-tight">
-      <div class="container">
-        <div class="teaser">
-          <div>
-            <p class="eyebrow">Made just for you</p>
-            <h2>Can't find it? We'll print it.</h2>
-            <p>Send us an STL file, a sketch or a broken part. You get a firm quote within 24 hours and pay nothing until you approve it.</p>
-          </div>
-          <a href="#custom" class="btn btn-primary">Start a custom order</a>
-        </div>
-      </div>
-    </section>
-
-    <!-- FAQ -->
-    <section class="section section-alt" id="faq">
-      <div class="container narrow">
-        <div class="section-head center">
-          <div>
-            <p class="eyebrow">Questions?</p>
-            <h2>Frequently asked</h2>
+      <section class="section section-tight">
+        <div class="container">
+          <div class="teaser">
+            <div>
+              <p class="eyebrow">Made just for you</p>
+              <h2>Can't find it? We'll print it.</h2>
+              <p>Fill out the custom item form, see an instant price, and add it straight to your cart.</p>
+            </div>
+            <a href="#custom" class="btn btn-primary">Make a custom item</a>
           </div>
         </div>
-        <div class="faq">
-          <details>
-            <summary>What materials do you print with?</summary>
-            <p>Mostly PLA (great all-rounder), PETG (stronger and heat resistant), TPU (flexible and rubbery) and resin (very fine detail for miniatures and jewellery). Not sure which you need? Pick “Not sure” on the custom form and we'll advise.</p>
-          </details>
-          <details>
-            <summary>How long does shipping take?</summary>
-            <p>Shop items ship within 1–2 business days. Custom orders typically ship 3–5 business days after you approve the quote. Rush options are available.</p>
-          </details>
-          <details>
-            <summary>I don't have a 3D file. Can you still help?</summary>
-            <p>Yes! Send photos, a sketch with measurements, or the broken part's dimensions and we can model it for you. Design time is included in your quote.</p>
-          </details>
-          <details>
-            <summary>Can I change the colour of a shop item?</summary>
-            <p>Most shop items let you choose a colour before adding to cart. For colours not listed, use the custom order form and choose “Personalise a shop item”.</p>
-          </details>
-          <details>
-            <summary>What is your returns policy?</summary>
-            <p>Shop items can be returned within 30 days in original condition. Custom items are made to order and can't be returned, but if something arrives damaged or doesn't match the approved quote we'll reprint it free.</p>
-          </details>
+      </section>
+
+      <section class="section section-alt" id="faq">
+        <div class="container narrow">
+          <div class="section-head center">
+            <div>
+              <p class="eyebrow">Questions?</p>
+              <h2>Frequently asked</h2>
+            </div>
+          </div>
+          <div class="faq">
+            <details>
+              <summary>What materials do you print with?</summary>
+              <p>Mostly PLA (great all-rounder), PETG (stronger and heat resistant), TPU (flexible and rubbery) and resin (very fine detail for miniatures and jewellery). Not sure which you need? Pick “Not sure” on the custom form and we'll advise.</p>
+            </details>
+            <details>
+              <summary>How long does shipping take?</summary>
+              <p>Shop items ship within 1–2 business days. Custom items typically ship 3–5 business days after we confirm your order.</p>
+            </details>
+            <details>
+              <summary>How is a custom item priced?</summary>
+              <p>The custom form shows an estimated price based on size, material, finish and quantity. We check every custom order and email you if the final price is different before you pay.</p>
+            </details>
+            <details>
+              <summary>Where can I see what I ordered?</summary>
+              <p>Open the Orders tab. It lists every order and quote request you've placed on this device, with the items, prices and date.</p>
+            </details>
+            <details>
+              <summary>What is your returns policy?</summary>
+              <p>Shop items can be returned within 30 days in original condition. Custom items are made to order and can't be returned, but if something arrives damaged we'll reprint it free.</p>
+            </details>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
     </div>
 
-    <!-- ===== Shop tab ===== -->
+    <!-- ===== Shop ===== -->
     <div class="view" data-view="shop" hidden>
-    <section class="section">
-      <div class="container">
-        <div class="section-head">
-          <div>
-            <p class="eyebrow">Ready to ship</p>
-            <h2>Shop the collection</h2>
-          </div>
-          <div class="shop-controls">
-            <label class="search">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m20 20-3.5-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-              <input type="search" id="search" placeholder="Search products" aria-label="Search products">
-            </label>
-            <select id="sort" aria-label="Sort products">
-              <option value="featured">Featured</option>
-              <option value="price-asc">Price: low to high</option>
-              <option value="price-desc">Price: high to low</option>
-              <option value="name">Name A–Z</option>
-            </select>
-          </div>
-        </div>
-        <div class="filters" id="filters" role="tablist" aria-label="Product categories"></div>
-        <div class="product-grid" id="product-grid"></div>
-        <p class="empty-state" id="empty-state" hidden>No products match your search. Can't find it? <a href="#custom">We can print it custom.</a></p>
-      </div>
-    </section>
-
-    </div>
-
-    <!-- ===== Custom orders tab ===== -->
-    <div class="view" data-view="custom" hidden>
-    <section class="section">
-      <div class="container custom-layout">
-        <div class="custom-intro">
-          <p class="eyebrow">Made just for you</p>
-          <h2>Custom 3D printing</h2>
-          <p>Have an STL file, a rough sketch, or just an idea? Tell us about it and we'll send a firm quote within 24 hours. No payment until you approve the quote.</p>
-          <ul class="custom-ideas">
-            <li><span>🔧</span><div><strong>Replacement parts</strong><p>Broken knobs, clips, brackets &amp; hard-to-find pieces.</p></div></li>
-            <li><span>🎁</span><div><strong>Personalised gifts</strong><p>Name plates, keychains, figurines &amp; lithophanes.</p></div></li>
-            <li><span>📐</span><div><strong>Prototypes</strong><p>Test fit and form before you invest in manufacturing.</p></div></li>
-            <li><span>🎲</span><div><strong>Hobby &amp; cosplay</strong><p>Miniatures, terrain, props &amp; armour pieces.</p></div></li>
-          </ul>
-          <div class="estimate-card" aria-live="polite">
-            <p class="estimate-label">Instant estimate</p>
-            <p class="estimate-value" id="estimate-value">$—</p>
-            <p class="estimate-note" id="estimate-note">Fill in size, material and quantity to see a ballpark price. Your final quote may differ.</p>
-          </div>
-        </div>
-
-        <form class="custom-form" id="custom-form" novalidate>
-          <fieldset>
-            <legend>1. Your project</legend>
-            <div class="field">
-              <label for="c-type">What do you need?</label>
-              <select id="c-type" name="type" required>
-                <option value="">Choose one…</option>
-                <option value="file">I have a 3D file (STL/OBJ/3MF)</option>
-                <option value="design">I need it designed from a sketch/photo</option>
-                <option value="part">Replacement part</option>
-                <option value="personalise">Personalise a shop item</option>
-                <option value="other">Something else</option>
+      <section class="section">
+        <div class="container">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Ready to ship</p>
+              <h2>Shop the collection</h2>
+            </div>
+            <div class="shop-controls">
+              <label class="search">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m20 20-3.5-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                <input type="search" id="search" placeholder="Search products" aria-label="Search products">
+              </label>
+              <select id="sort" aria-label="Sort products">
+                <option value="featured">Featured</option>
+                <option value="price-asc">Price: low to high</option>
+                <option value="price-desc">Price: high to low</option>
+                <option value="name">Name A–Z</option>
               </select>
             </div>
-            <div class="field">
-              <label for="c-desc">Describe your project</label>
-              <textarea id="c-desc" name="description" rows="4" required minlength="15" placeholder="What is it, what's it for, any key measurements or details…"></textarea>
-            </div>
-            <div class="field">
-              <label for="c-file">Upload files <span class="optional">(optional)</span></label>
-              <label class="dropzone" id="dropzone">
-                <input type="file" id="c-file" name="files" multiple accept=".stl,.obj,.3mf,.step,.stp,.png,.jpg,.jpeg,.pdf">
-                <span class="dropzone-text"><strong>Click to upload</strong> or drag &amp; drop<br><small>STL, OBJ, 3MF, STEP, images or PDF — max 25&nbsp;MB each</small></span>
-              </label>
-              <ul class="file-list" id="file-list"></ul>
-            </div>
-          </fieldset>
-
-          <fieldset>
-            <legend>2. Print options</legend>
-            <div class="field-row">
-              <div class="field">
-                <label for="c-size">Approx. size (longest side)</label>
-                <select id="c-size" name="size" required>
-                  <option value="">Choose…</option>
-                  <option value="xs">Under 5 cm</option>
-                  <option value="s">5–10 cm</option>
-                  <option value="m">10–20 cm</option>
-                  <option value="l">20–30 cm</option>
-                  <option value="xl">Over 30 cm</option>
-                </select>
-              </div>
-              <div class="field">
-                <label for="c-qty">Quantity</label>
-                <input type="number" id="c-qty" name="quantity" min="1" max="500" value="1" required>
-              </div>
-            </div>
-            <div class="field">
-              <span class="label">Material</span>
-              <div class="chip-group" id="material-group" role="radiogroup" aria-label="Material">
-                <label class="chip"><input type="radio" name="material" value="pla" checked><span>PLA <small>everyday</small></span></label>
-                <label class="chip"><input type="radio" name="material" value="petg"><span>PETG <small>tough</small></span></label>
-                <label class="chip"><input type="radio" name="material" value="tpu"><span>TPU <small>flexible</small></span></label>
-                <label class="chip"><input type="radio" name="material" value="resin"><span>Resin <small>fine detail</small></span></label>
-                <label class="chip"><input type="radio" name="material" value="unsure"><span>Not sure <small>advise me</small></span></label>
-              </div>
-            </div>
-            <div class="field-row">
-              <div class="field">
-                <label for="c-color">Colour</label>
-                <select id="c-color" name="color">
-                  <option>Matte Black</option>
-                  <option>Bone White</option>
-                  <option>Slate Grey</option>
-                  <option>Signal Red</option>
-                  <option>Ocean Blue</option>
-                  <option>Forest Green</option>
-                  <option>Sunflower Yellow</option>
-                  <option>Silk Gold</option>
-                  <option>Multi-colour</option>
-                  <option>Other (describe above)</option>
-                </select>
-              </div>
-              <div class="field">
-                <label for="c-finish">Finish</label>
-                <select id="c-finish" name="finish">
-                  <option value="standard">Standard (as printed)</option>
-                  <option value="sanded">Sanded &amp; smoothed (+25%)</option>
-                  <option value="painted">Primed &amp; painted (+60%)</option>
-                </select>
-              </div>
-            </div>
-            <div class="field">
-              <label for="c-deadline">Needed by <span class="optional">(optional)</span></label>
-              <input type="date" id="c-deadline" name="deadline">
-            </div>
-          </fieldset>
-
-          <fieldset>
-            <legend>3. Your details</legend>
-            <div class="field-row">
-              <div class="field">
-                <label for="c-name">Name</label>
-                <input type="text" id="c-name" name="name" autocomplete="name" required>
-              </div>
-              <div class="field">
-                <label for="c-email">Email</label>
-                <input type="email" id="c-email" name="email" autocomplete="email" required>
-              </div>
-            </div>
-          </fieldset>
-
-          <button type="submit" class="btn btn-primary btn-block">Request my free quote</button>
-          <p class="form-note">We reply within 24 hours. No payment is taken until you approve your quote.</p>
-        </form>
-      </div>
-    </section>
-
-    <!-- How it works -->
-    <section class="section section-alt" id="how">
-      <div class="container">
-        <div class="section-head center">
-          <div>
-            <p class="eyebrow">Simple process</p>
-            <h2>How custom orders work</h2>
           </div>
+          <div class="filters" id="filters" aria-label="Product categories"></div>
+          <div class="product-grid" id="product-grid"></div>
+          <p class="empty-state" id="empty-state" hidden>No products match your search. <a href="#custom">Make it as a custom item instead.</a></p>
         </div>
-        <ol class="steps">
-          <li><span class="step-num">1</span><h3>Send your idea</h3><p>Upload a file or describe what you need using the form above.</p></li>
-          <li><span class="step-num">2</span><h3>Get a quote</h3><p>We review printability and email a firm price and timeline within 24 hours.</p></li>
-          <li><span class="step-num">3</span><h3>We print it</h3><p>Once approved, your part is printed, inspected and finished by hand.</p></li>
-          <li><span class="step-num">4</span><h3>Delivered</h3><p>Carefully packed and shipped to your door with tracking.</p></li>
-        </ol>
-      </div>
-    </section>
-
+      </section>
     </div>
 
-    <!-- ===== Cart tab ===== -->
-    <div class="view" data-view="cart" hidden>
-    <section class="section">
-      <div class="container">
-        <div class="section-head">
-          <div>
-            <p class="eyebrow">Checkout</p>
-            <h2>Your cart</h2>
-          </div>
-          <a href="#shop" class="btn btn-outline">Continue shopping</a>
-        </div>
-        <div class="cart-layout" id="cart-layout">
-          <div class="cart-panel" id="cart-items"></div>
-          <aside class="summary-panel" aria-label="Order summary">
-            <h3>Order summary</h3>
-            <div class="totals">
-              <div><span>Subtotal</span><span id="cart-subtotal">$0.00</span></div>
-              <div><span>Shipping</span><span id="cart-shipping">$0.00</span></div>
-              <div class="total"><span>Total</span><span id="cart-total">$0.00</span></div>
+    <!-- ===== Custom items ===== -->
+    <div class="view" data-view="custom" hidden>
+      <section class="section">
+        <div class="container custom-layout">
+          <div class="custom-intro">
+            <p class="eyebrow">Made just for you</p>
+            <h2>Custom item form</h2>
+            <p>Fill out the form to design your item. You'll see the price update as you go, then add it to your cart like any other product.</p>
+            <ul class="custom-ideas">
+              <li><span class="idea-icon">01</span><div><strong>Replacement parts</strong><p>Broken knobs, clips, brackets &amp; hard-to-find pieces.</p></div></li>
+              <li><span class="idea-icon">02</span><div><strong>Personalised gifts</strong><p>Name plates, keychains, figurines &amp; lithophanes.</p></div></li>
+              <li><span class="idea-icon">03</span><div><strong>Prototypes</strong><p>Test fit and form before you invest in manufacturing.</p></div></li>
+              <li><span class="idea-icon">04</span><div><strong>Hobby &amp; cosplay</strong><p>Miniatures, terrain, props &amp; armour pieces.</p></div></li>
+            </ul>
+            <div class="estimate-card" aria-live="polite">
+              <p class="estimate-label">Your price</p>
+              <p class="estimate-value" id="estimate-value">$—</p>
+              <p class="estimate-note" id="estimate-note">Choose a size to see your price.</p>
             </div>
-            <p class="ship-note" id="ship-note"></p>
-            <form id="checkout-form" class="checkout-form" novalidate>
-              <div class="field"><label for="co-name">Full name</label><input id="co-name" name="name" autocomplete="name" required></div>
-              <div class="field"><label for="co-email">Email</label><input id="co-email" type="email" name="email" autocomplete="email" required></div>
-              <div class="field"><label for="co-address">Shipping address</label><textarea id="co-address" name="address" rows="3" autocomplete="street-address" required></textarea></div>
-              <div class="field"><label for="co-notes">Order notes <span class="optional">(e.g. keychain name)</span></label><input id="co-notes" name="notes"></div>
-              <button class="btn btn-primary btn-block" type="submit">Place order</button>
-              <p class="form-note">We'll email a secure payment link to confirm your order.</p>
-            </form>
-          </aside>
+          </div>
+
+          <form class="custom-form" id="custom-form" novalidate>
+            <fieldset>
+              <legend>1. What do you want made?</legend>
+              <div class="field">
+                <label for="c-title">Item name</label>
+                <input type="text" id="c-title" name="title" maxlength="60" required placeholder="e.g. Oven knob, name sign, dragon figurine">
+              </div>
+              <div class="field">
+                <label for="c-type">Type of request</label>
+                <select id="c-type" name="type" required>
+                  <option value="">Choose one…</option>
+                  <option value="file">I have a 3D file (STL/OBJ/3MF)</option>
+                  <option value="design">Design it for me from a sketch or photo</option>
+                  <option value="part">Replacement part</option>
+                  <option value="personalise">Personalise a shop item</option>
+                  <option value="other">Something else</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="c-desc">Description</label>
+                <textarea id="c-desc" name="description" rows="4" required minlength="10" placeholder="What is it for? Any measurements, text or details we need to know?"></textarea>
+              </div>
+              <div class="field">
+                <label for="c-file">Upload files <span class="optional">(optional)</span></label>
+                <label class="dropzone" id="dropzone">
+                  <input type="file" id="c-file" name="files" multiple accept=".stl,.obj,.3mf,.step,.stp,.png,.jpg,.jpeg,.pdf">
+                  <span class="dropzone-text"><strong>Tap to upload</strong> or drag &amp; drop<br><small>STL, OBJ, 3MF, STEP, images or PDF, up to 25&nbsp;MB each</small></span>
+                </label>
+                <ul class="file-list" id="file-list"></ul>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend>2. Size, material &amp; colour</legend>
+              <div class="field-row">
+                <div class="field">
+                  <label for="c-size">Size (longest side)</label>
+                  <select id="c-size" name="size" required>
+                    <option value="">Choose…</option>
+                    <option value="xs">Under 5 cm</option>
+                    <option value="s">5–10 cm</option>
+                    <option value="m">10–20 cm</option>
+                    <option value="l">20–30 cm</option>
+                    <option value="xl">Over 30 cm</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="c-qty">Quantity</label>
+                  <input type="number" id="c-qty" name="quantity" min="1" max="500" value="1" required>
+                </div>
+              </div>
+              <div class="field">
+                <span class="label">Material</span>
+                <div class="chip-group" role="radiogroup" aria-label="Material">
+                  <label class="chip"><input type="radio" name="material" value="pla" checked><span>PLA <small>everyday</small></span></label>
+                  <label class="chip"><input type="radio" name="material" value="petg"><span>PETG <small>tough</small></span></label>
+                  <label class="chip"><input type="radio" name="material" value="tpu"><span>TPU <small>flexible</small></span></label>
+                  <label class="chip"><input type="radio" name="material" value="resin"><span>Resin <small>fine detail</small></span></label>
+                  <label class="chip"><input type="radio" name="material" value="unsure"><span>Not sure <small>advise me</small></span></label>
+                </div>
+              </div>
+              <div class="field-row">
+                <div class="field">
+                  <label for="c-color">Colour</label>
+                  <select id="c-color" name="color"></select>
+                </div>
+                <div class="field">
+                  <label for="c-finish">Finish</label>
+                  <select id="c-finish" name="finish">
+                    <option value="standard">Standard (as printed)</option>
+                    <option value="sanded">Sanded &amp; smoothed (+25%)</option>
+                    <option value="painted">Primed &amp; painted (+60%)</option>
+                  </select>
+                </div>
+              </div>
+              <div class="field">
+                <label for="c-deadline">Needed by <span class="optional">(optional)</span></label>
+                <input type="date" id="c-deadline" name="deadline">
+              </div>
+            </fieldset>
+
+            <button type="submit" class="btn btn-primary btn-block" id="custom-add">Add custom item to cart</button>
+            <p class="form-note">You'll enter your name and address at checkout. We confirm every custom item before you pay.</p>
+          </form>
         </div>
-      </div>
-    </section>
+      </section>
+
+      <section class="section section-alt">
+        <div class="container">
+          <div class="section-head center">
+            <div>
+              <p class="eyebrow">Simple process</p>
+              <h2>How custom items work</h2>
+            </div>
+          </div>
+          <ol class="steps">
+            <li><span class="step-num">1</span><h3>Fill out the form</h3><p>Describe your item, choose size, material and colour, and upload any files.</p></li>
+            <li><span class="step-num">2</span><h3>Add it to your cart</h3><p>Check out with your custom item alongside anything from the shop.</p></li>
+            <li><span class="step-num">3</span><h3>We confirm &amp; print</h3><p>We check your design, confirm the price by email, then print and finish it by hand.</p></li>
+            <li><span class="step-num">4</span><h3>Delivered</h3><p>Carefully packed and shipped to your door with tracking.</p></li>
+          </ol>
+        </div>
+      </section>
+    </div>
+
+    <!-- ===== Cart ===== -->
+    <div class="view" data-view="cart" hidden>
+      <section class="section">
+        <div class="container">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Checkout</p>
+              <h2>Your cart</h2>
+            </div>
+            <a href="#shop" class="btn btn-outline">Continue shopping</a>
+          </div>
+          <div class="cart-layout" id="cart-layout">
+            <div class="cart-panel" id="cart-items"></div>
+            <aside class="summary-panel" aria-label="Order summary">
+              <h3>Order summary</h3>
+              <div class="totals">
+                <div><span>Subtotal</span><span id="cart-subtotal">$0.00</span></div>
+                <div><span>Shipping</span><span id="cart-shipping">$0.00</span></div>
+                <div class="total"><span>Total</span><span id="cart-total">$0.00</span></div>
+              </div>
+              <p class="ship-note" id="ship-note"></p>
+              <form id="checkout-form" class="checkout-form" novalidate>
+                <div class="field"><label for="co-name">Full name</label><input id="co-name" name="name" autocomplete="name" required></div>
+                <div class="field"><label for="co-email">Email</label><input id="co-email" type="email" name="email" autocomplete="email" required></div>
+                <div class="field"><label for="co-address">Shipping address</label><textarea id="co-address" name="address" rows="3" autocomplete="street-address" required></textarea></div>
+                <div class="field"><label for="co-notes">Order notes <span class="optional">(optional)</span></label><input id="co-notes" name="notes"></div>
+                <button class="btn btn-primary btn-block" type="submit">Place order</button>
+                <p class="form-note">We'll email a secure payment link to confirm your order.</p>
+              </form>
+            </aside>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ===== Orders ===== -->
+    <div class="view" data-view="orders" hidden>
+      <section class="section">
+        <div class="container narrow">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Order history</p>
+              <h2>Your orders</h2>
+            </div>
+          </div>
+          <div id="orders-list"></div>
+          <p class="form-note" id="orders-note">Orders you place are saved on this device.</p>
+        </div>
+      </section>
+    </div>
+
+    <!-- ===== Shop owner (not in the tab bar) ===== -->
+    <div class="view" data-view="manage" hidden>
+      <section class="section">
+        <div class="container narrow">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Shop owner</p>
+              <h2>Manage products</h2>
+            </div>
+            <button type="button" class="btn btn-outline" id="owner-lock" hidden>Lock</button>
+          </div>
+
+          <form class="panel" id="owner-login" novalidate>
+            <p>This page is for the shop owner. Enter your PIN to add products to the shop.</p>
+            <div class="field">
+              <label for="owner-pin">PIN</label>
+              <input type="password" id="owner-pin" inputmode="numeric" autocomplete="off" required>
+            </div>
+            <button class="btn btn-primary" type="submit">Unlock</button>
+          </form>
+
+          <div id="owner-panel" hidden>
+            <form class="panel" id="product-form" novalidate>
+              <h3>Add a product</h3>
+              <div class="field">
+                <label for="p-name">Product name</label>
+                <input id="p-name" name="name" maxlength="60" required>
+              </div>
+              <div class="field-row">
+                <div class="field">
+                  <label for="p-price">Price ($)</label>
+                  <input id="p-price" name="price" type="number" min="0.5" max="10000" step="0.01" required>
+                </div>
+                <div class="field">
+                  <label for="p-category">Category</label>
+                  <select id="p-category" name="category"></select>
+                </div>
+              </div>
+              <div class="field">
+                <label for="p-desc">Description</label>
+                <textarea id="p-desc" name="description" rows="3" required minlength="10"></textarea>
+              </div>
+              <div class="field">
+                <label for="p-specs">Details <span class="optional">(one per line, e.g. “15 cm tall”)</span></label>
+                <textarea id="p-specs" name="specs" rows="3"></textarea>
+              </div>
+              <div class="field">
+                <span class="label">Colours available</span>
+                <div class="chip-group" id="p-colors"></div>
+              </div>
+              <div class="field-row">
+                <div class="field">
+                  <label for="p-badge">Badge <span class="optional">(optional)</span></label>
+                  <input id="p-badge" name="badge" maxlength="16" placeholder="e.g. New">
+                </div>
+                <div class="field">
+                  <label for="p-image">Photo <span class="optional">(optional)</span></label>
+                  <input id="p-image" type="file" accept="image/*">
+                </div>
+              </div>
+              <button class="btn btn-primary btn-block" type="submit">Add to shop</button>
+            </form>
+
+            <div class="panel">
+              <h3>Products you've added</h3>
+              <div id="owner-products"></div>
+              <p class="form-note">Products you add here are saved in this browser, so only you can see them for now. To show them to every customer, tap “Copy product list” and send it to your developer to add to <code>js/products.js</code>.</p>
+              <button type="button" class="btn btn-outline btn-block" id="owner-copy">Copy product list</button>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   </main>
 
@@ -360,25 +413,26 @@
       <div>
         <h4>Shop</h4>
         <a href="#shop">All products</a>
-        <a href="#custom">Custom orders</a>
+        <a href="#custom">Custom items</a>
+        <a href="#orders">Your orders</a>
         <a href="#faq">Shipping &amp; returns</a>
       </div>
       <div>
         <h4>Contact</h4>
-        <a href="mailto:hello@example.com">hello@example.com</a>
+        <p class="contact-email" id="contact-email">hello@example.com</p>
         <p>Mon–Fri, 9am–5pm</p>
       </div>
     </div>
     <div class="container footer-bottom">
       <p>&copy; <span id="year"></span> Layerworks 3D. All rights reserved.</p>
+      <a href="#manage" class="owner-link">Shop owner</a>
     </div>
   </footer>
 
-
-  <!-- Product modal -->
+  <!-- Product details -->
   <div class="modal" id="product-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" hidden>
     <div class="modal-card">
-      <button class="icon-btn modal-close" data-close aria-label="Close">&times;</button>
+      <button type="button" class="icon-btn modal-close" data-close aria-label="Close">&times;</button>
       <div class="modal-media" id="modal-media"></div>
       <div class="modal-body">
         <p class="eyebrow" id="modal-cat"></p>
@@ -396,21 +450,21 @@
             <input type="number" id="modal-qty" value="1" min="1" max="20" aria-label="Quantity">
             <button type="button" id="qty-plus" aria-label="Increase quantity">+</button>
           </div>
-          <button class="btn btn-primary" id="modal-add">Add to cart</button>
+          <button type="button" class="btn btn-primary" id="modal-add">Add to cart</button>
         </div>
-        <a href="#custom" class="modal-custom-link" data-close>Want it bigger, smaller or personalised? Request a custom version →</a>
+        <a href="#custom" class="modal-custom-link" data-close>Want it bigger, smaller or personalised? Make a custom version →</a>
       </div>
     </div>
   </div>
 
-  <!-- Message modal (checkout / quote confirmation) -->
+  <!-- Confirmation message -->
   <div class="modal" id="message-modal" role="dialog" aria-modal="true" aria-labelledby="message-title" hidden>
     <div class="modal-card modal-small">
-      <button class="icon-btn modal-close" data-close aria-label="Close">&times;</button>
+      <button type="button" class="icon-btn modal-close" data-close aria-label="Close">&times;</button>
       <div class="message-icon">✓</div>
       <h3 id="message-title"></h3>
       <div id="message-body"></div>
-      <button class="btn btn-primary btn-block" data-close>Done</button>
+      <div class="message-actions" id="message-actions"></div>
     </div>
   </div>
 

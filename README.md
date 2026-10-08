@@ -4,12 +4,18 @@ A static storefront for selling 3D printed items, with a dedicated **custom orde
 
 ## Features
 
-- **Shop** — product grid with category filters, search and sorting
-- **Product details** — colour picker (preview updates live), quantity, specs
-- **Cart** — slide-out drawer, saved in the browser, free-shipping threshold
-- **Checkout** — collects name, email, address and notes, then sends the order to you
-- **Custom orders** — project type, description, file upload (STL/OBJ/3MF/STEP/images), size, quantity, material, colour, finish and deadline, with an **instant price estimate**
-- How-it-works steps, FAQ, responsive mobile layout and dark mode
+The site has five tabs across the top: **Home**, **Shop**, **Custom**, **Cart** and **Orders**.
+
+- **Home**: featured products, a link to custom items, and the FAQ
+- **Shop**: product grid with category filters, search and sorting; tap a product for details, colour and quantity
+- **Custom**: a form to design a custom item (name, description, files, size, quantity, material, colour, finish, deadline) with a live price that adds the item straight to the cart
+- **Cart**: every item with its description, chosen options and price, plus the checkout form
+- **Orders**: every order placed on this device, with items, prices, date and shipping details
+- **Shop owner page**: linked as "Shop owner" in the footer and protected by a PIN (`STORE.ownerPin`, default `1234`). Add products with a name, price, category, description, colours and an optional photo.
+
+Products added on the owner page are stored in that browser only. To show them to all customers, use "Copy product list" and add the entries to `PRODUCTS` in `js/products.js`. The PIN only hides the page from casual visitors; it isn't real security.
+
+The code avoids recent JavaScript syntax so it runs on older phones and browsers.
 
 ## Run locally
 
