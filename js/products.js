@@ -19,8 +19,8 @@ var STORE = {
   previewMode: false,
   // PIN for the "Shop owner" page (footer link) where you add products.
   // This only hides the page from casual visitors — it is not real security,
-  // since anyone can read this file. Change it from the default.
-  ownerPin: "1234",
+  // since anyone can read this file.
+  ownerPin: "2012",
 };
 
 var COLORS = {
