@@ -519,7 +519,8 @@
   // Resolves to "preview" (nothing sent), "sent" (posted to STORE.formEndpoint)
   // or "email" (opened the customer's email app with the details filled in).
   function send(subject, fields) {
-    if (STORE.previewMode) return Promise.resolve("preview");
+    // Until a real contact email is set in products.js, nothing is sent anywhere.
+    if (STORE.previewMode || /@example\.com$/i.test(STORE.contactEmail)) return Promise.resolve("preview");
     if (STORE.formEndpoint) {
       return fetch(STORE.formEndpoint, {
         method: "POST",
@@ -622,7 +623,7 @@
         checkoutForm.reset();
         var msg =
           how === "preview"
-            ? "This is a preview, so nothing was sent and you won't be charged. On the live site the order goes to " + esc(STORE.contactEmail) + "."
+            ? "This shop isn't taking real orders yet, so nothing was sent and you won't be charged."
             : how === "sent"
             ? "We've received your order and will email <strong>" + esc(data.email) + "</strong> a payment link shortly."
             : "Your email app should open with your order details. Send that email and we'll reply with a payment link.";
