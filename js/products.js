@@ -14,17 +14,18 @@ var STORE = {
   contactEmail: "aaronngs2012@gmail.com",
   // Phone for calls and texts. The owner can also set this on the Shop owner page.
   phone: "",
-  // Opening hours shown on the Home page. "calls" is null on days with no calls.
+  // Opening hours shown on the Home page. "calls" is null on days with no calls;
+  // "messages: false" means no messages that day.
   hours: [
-    { day: "Sunday", calls: null },
+    { day: "Sunday", calls: "3:00–9:30 pm" },
     { day: "Monday", calls: "6:30–9:30 pm" },
     { day: "Tuesday", calls: "6:30–9:30 pm" },
     { day: "Wednesday", calls: "6:30–9:30 pm" },
     { day: "Thursday", calls: null },
     { day: "Friday", calls: "1:30–5:00 pm" },
-    { day: "Saturday", closed: true },
+    { day: "Saturday", closed: true, messages: false },
   ],
-  hoursSummary: "Open Sunday–Friday. Message any time. Calls Mon–Wed 6:30–9:30 pm and Fri 1:30–5:00 pm.",
+  hoursSummary: "Open Sunday–Friday, closed Saturday. Message any time Sunday–Friday. Calls Sun 3:00–9:30 pm, Mon–Wed 6:30–9:30 pm and Fri 1:30–5:00 pm.",
   // Optional: a form endpoint (e.g. https://formspree.io/f/xxxx) that receives
   // custom-order requests and checkout orders as JSON. Leave empty to fall back
   // to opening the customer's email app with the details filled in.
@@ -40,19 +41,12 @@ var STORE = {
   githubBranch: "claude/3d-print-sales-website-pu768l",
 };
 
+// The filament colours on offer. Products can only use these.
 var COLORS = {
   black: { name: "Matte Black", hex: "#2b2d31" },
   white: { name: "Bone White", hex: "#ece8df" },
-  grey: { name: "Slate Grey", hex: "#7b8494" },
   red: { name: "Signal Red", hex: "#e2483d" },
   blue: { name: "Ocean Blue", hex: "#2f7de1" },
-  green: { name: "Forest Green", hex: "#3a9a5b" },
-  yellow: { name: "Sunflower Yellow", hex: "#f4c430" },
-  orange: { name: "Tangerine", hex: "#f08a24" },
-  purple: { name: "Galaxy Purple", hex: "#7a4fd6" },
-  gold: { name: "Silk Gold", hex: "#c9a14a" },
-  teal: { name: "Teal", hex: "#1fa5a0" },
-  pink: { name: "Blush Pink", hex: "#f29fb5" },
 };
 
 var CATEGORIES = [
@@ -71,7 +65,7 @@ var PRODUCTS = [
     category: "home",
     price: 24,
     art: "vase",
-    colors: ["teal", "white", "gold", "purple"],
+    colors: ["blue", "white", "red", "black"],
     badge: "Bestseller",
     description: "A twisting, faceted vase printed in a single continuous spiral. Watertight liner included for fresh flowers.",
     specs: ["18 cm tall", "PLA with watertight insert", "Print time ~9 hrs"],
@@ -82,7 +76,7 @@ var PRODUCTS = [
     category: "garden",
     price: 18,
     art: "planter",
-    colors: ["white", "black", "green", "pink"],
+    colors: ["white", "black", "red", "blue"],
     description: "Low-poly planter with a hidden drainage tray. Perfect for succulents and small herbs.",
     specs: ["12 cm wide", "Drainage tray included", "PETG — UV resistant"],
   },
@@ -92,7 +86,7 @@ var PRODUCTS = [
     category: "desk",
     price: 12,
     art: "cable",
-    colors: ["black", "white", "grey"],
+    colors: ["black", "white"],
     description: "Set of 6 weighted cable clips that keep chargers from slipping off your desk.",
     specs: ["Set of 6", "Fits cables up to 6 mm", "Non-slip base"],
   },
@@ -102,7 +96,7 @@ var PRODUCTS = [
     category: "desk",
     price: 16,
     art: "stand",
-    colors: ["black", "grey", "blue", "orange"],
+    colors: ["black", "white", "blue", "red"],
     badge: "New",
     description: "Three viewing angles, fits phones and small tablets, with a slot for your charging cable.",
     specs: ["3 angles", "Fits devices up to 13 mm thick", "Fold-flat design"],
@@ -113,7 +107,7 @@ var PRODUCTS = [
     category: "toys",
     price: 28,
     art: "dragon",
-    colors: ["purple", "red", "green", "gold"],
+    colors: ["red", "blue", "black", "white"],
     badge: "Bestseller",
     description: "Print-in-place dragon with fully articulated body and wings. A satisfying fidget and a great shelf piece.",
     specs: ["30 cm long", "Print-in-place joints", "Ages 8+"],
@@ -124,7 +118,7 @@ var PRODUCTS = [
     category: "toys",
     price: 34,
     art: "tower",
-    colors: ["grey", "black", "gold"],
+    colors: ["black", "white", "red"],
     description: "Medieval castle dice tower with internal baffles for truly random rolls. Built-in dice tray.",
     specs: ["22 cm tall", "Fits up to 25 mm dice", "Felt-lined tray"],
   },
@@ -155,7 +149,7 @@ var PRODUCTS = [
     category: "gifts",
     price: 9,
     art: "keychain",
-    colors: ["red", "blue", "green", "yellow", "pink", "black"],
+    colors: ["red", "blue", "black", "white"],
     description: "Your name or short word in bold two-tone letters. Add the name you want in the order notes at checkout.",
     specs: ["Up to 10 characters", "Two-colour print", "Steel ring included"],
   },
@@ -165,7 +159,7 @@ var PRODUCTS = [
     category: "home",
     price: 22,
     art: "hex",
-    colors: ["white", "black", "yellow", "teal"],
+    colors: ["white", "black", "blue"],
     description: "Modular hexagon shelf that connects to others for endless layouts. Mounting hardware included.",
     specs: ["20 cm across", "Interlocking design", "Holds up to 3 kg"],
   },
@@ -175,7 +169,7 @@ var PRODUCTS = [
     category: "garden",
     price: 26,
     art: "pot",
-    colors: ["green", "white", "orange"],
+    colors: ["white", "blue", "red"],
     description: "Two-part pot with a wicking reservoir that keeps soil moist for up to two weeks.",
     specs: ["14 cm tall", "300 ml reservoir", "Water level window"],
   },
@@ -185,7 +179,7 @@ var PRODUCTS = [
     category: "toys",
     price: 19,
     art: "cube",
-    colors: ["blue", "red", "yellow", "green"],
+    colors: ["blue", "red", "black", "white"],
     description: "Interlocking puzzle cube that looks simple and takes ages to solve. Printed as one interlocking piece.",
     specs: ["6 cm cube", "Difficulty: tricky", "Ages 10+"],
   },
@@ -216,8 +210,16 @@ function escapeHtml(s) {
   });
 }
 
+// A product's colours, limited to the ones in COLORS (all of them if none match).
+function productColors(product) {
+  var list = (product.colors || []).filter(function (k) {
+    return !!COLORS[k];
+  });
+  return list.length ? list : Object.keys(COLORS);
+}
+
 function productArt(product, colorKey) {
-  var color = COLORS[colorKey] || COLORS[(product.colors || [])[0]] || COLORS.grey;
+  var color = COLORS[colorKey] || COLORS[productColors(product)[0]];
   var name = escapeHtml(product.name);
   if (product.image) {
     return '<img src="' + escapeHtml(product.image) + '" alt="' + name + '" loading="lazy">';

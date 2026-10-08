@@ -251,7 +251,7 @@ function startShop(published) {
   }
 
   function cardHtml(p) {
-    var colors = p.colors || [];
+    var colors = productColors(p);
     return (
       '<article class="card">' +
       (ownerUnlocked ? '<button type="button" class="edit-chip" data-edit="' + esc(p.id) + '">Edit</button>' : "") +
@@ -322,7 +322,7 @@ function startShop(published) {
     if (buy) {
       var item = productById(buy.dataset.buyNow);
       if (item) {
-        addProductToCart(item.id, (item.colors || [])[0], 1);
+        addProductToCart(item.id, productColors(item)[0], 1);
         goToCheckout();
       }
       return;
@@ -330,7 +330,7 @@ function startShop(published) {
     var add = e.target.closest("[data-quick-add]");
     if (add) {
       var p = productById(add.dataset.quickAdd);
-      if (p) addProductToCart(p.id, (p.colors || [])[0], 1);
+      if (p) addProductToCart(p.id, productColors(p)[0], 1);
     }
   }
   $("#product-grid").addEventListener("click", onGridClick);
@@ -401,11 +401,11 @@ function startShop(published) {
     $("#modal-price").textContent = fmt(p.price);
     $("#modal-desc").textContent = p.description;
     $("#modal-specs").innerHTML = (p.specs || []).map(function (s) { return "<li>" + esc(s) + "</li>"; }).join("");
-    $("#modal-swatches").innerHTML = (p.colors || []).map(function (k) {
+    $("#modal-swatches").innerHTML = productColors(p).map(function (k) {
       return '<button type="button" class="swatch" data-color="' + k + '" style="background:' + COLORS[k].hex + '" aria-label="' + COLORS[k].name + '" aria-pressed="false"></button>';
     }).join("");
     $("#modal-qty").value = 1;
-    setModalColor((p.colors || [])[0]);
+    setModalColor(productColors(p)[0]);
     openModal(modal);
   }
 
@@ -634,7 +634,7 @@ function startShop(published) {
       return (
         '<tr class="' + (i === today ? "is-today" : "") + (h.closed ? " is-closed" : "") + '">' +
         '<th scope="row">' + esc(h.day) + (i === today ? ' <span class="pill">Today</span>' : "") + "</th>" +
-        "<td>" + (h.closed ? "Any time, answered Sunday" : "Any time") + "</td>" +
+        "<td>" + (h.messages === false ? "No messages" : "Any time") + "</td>" +
         '<td class="' + (h.calls ? "has-calls" : "no-calls") + '">' + esc(calls) + "</td></tr>"
       );
     }).join("");
@@ -916,7 +916,7 @@ function startShop(published) {
       description: d.description,
       details: details,
       price: q.price,
-      color: COLORS[d.color] ? d.color : "grey",
+      color: COLORS[d.color] ? d.color : Object.keys(COLORS)[0],
     });
     showMessage(
       "Added to your cart",
@@ -1038,7 +1038,7 @@ function startShop(published) {
   function renderPreview() {
     var p = editorProduct();
     var checked = $$("[name=colors]:checked", productForm)[0];
-    $("#p-preview").innerHTML = productArt(p, checked ? checked.value : (p.colors || [])[0]);
+    $("#p-preview").innerHTML = productArt(p, checked ? checked.value : productColors(p)[0]);
     $("#p-image-remove").hidden = !p.image;
   }
 
@@ -1058,7 +1058,7 @@ function startShop(published) {
     $("#p-specs").value = p ? (p.specs || []).join("\n") : "";
     $("#p-badge").value = p && p.badge ? p.badge : "";
     $("#p-featured").checked = p ? p.featured === true || (p.featured === undefined && !!p.badge) : false;
-    var colors = p ? p.colors || [] : [Object.keys(COLORS)[0]];
+    var colors = p ? productColors(p) : [Object.keys(COLORS)[0]];
     $$("[name=colors]", productForm).forEach(function (el) {
       el.checked = colors.indexOf(el.value) >= 0;
     });
@@ -1137,7 +1137,7 @@ function startShop(published) {
       ? PRODUCTS.map(function (p) {
           return (
             '<div class="cart-line" data-owner-id="' + esc(p.id) + '">' +
-            '<div class="cart-thumb">' + productArt(p, (p.colors || [])[0]) + "</div>" +
+            '<div class="cart-thumb">' + productArt(p, productColors(p)[0]) + "</div>" +
             '<div class="cart-info"><p class="cart-name">' + esc(p.name) + (p.image ? "" : ' <span class="pill">Drawing</span>') + "</p>" +
             '<p class="cart-desc">' + esc(categoryLabel(p.category)) + " · " + fmt(p.price) + "</p></div>" +
             '<div class="cart-right owner-actions"><button type="button" class="btn btn-small" data-owner-edit>Edit</button>' +
