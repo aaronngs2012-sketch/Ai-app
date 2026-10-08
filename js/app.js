@@ -428,7 +428,7 @@
     if (!cart.length) {
       body.innerHTML =
         '<div class="cart-empty"><p>Your cart is empty.</p>' +
-        '<div class="empty-actions"><a href="#shop" class="btn btn-primary">Browse the shop</a><a href="#custom" class="btn btn-outline">Make a custom item</a></div></div>';
+        '<p>Pick something from the Shop tab, or design your own in the Custom tab.</p></div>';
     } else {
       body.innerHTML = cart.map(function (l) {
         var info = lineInfo(l);
@@ -504,7 +504,7 @@
     if (!orders.length) {
       list.innerHTML =
         '<div class="panel cart-empty"><p>You haven\'t placed any orders yet.</p>' +
-        '<div class="empty-actions"><a href="#shop" class="btn btn-primary">Browse the shop</a><a href="#custom" class="btn btn-outline">Make a custom item</a></div></div>';
+        '<p>Pick something from the Shop tab, or design your own in the Custom tab.</p></div>';
       return;
     }
     list.innerHTML = orders.map(function (o) {

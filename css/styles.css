@@ -355,6 +355,10 @@ textarea {
   z-index: 1;
 }
 
+.lead-spaced {
+  margin-bottom: 36px;
+}
+
 .lead {
   font-size: 1.15rem;
   color: var(--muted);
