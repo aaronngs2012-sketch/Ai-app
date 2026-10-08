@@ -1984,3 +1984,32 @@ legend {
     font-size: 0.9rem;
   }
 }
+
+/* ---------- Script warning ---------- */
+.js-warning {
+  position: relative;
+  z-index: 100;
+  padding: 14px 20px;
+  background: var(--danger);
+  color: #fff;
+  font-size: 0.95rem;
+  text-align: center;
+  /* Wait a moment before showing, so it never flashes while the script loads */
+  visibility: hidden;
+  -webkit-animation: js-warning-show 0s 2s forwards;
+  animation: js-warning-show 0s 2s forwards;
+}
+
+@-webkit-keyframes js-warning-show {
+  to { visibility: visible; }
+}
+
+@keyframes js-warning-show {
+  to { visibility: visible; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js-warning {
+    visibility: visible;
+  }
+}

@@ -7,6 +7,19 @@
   "use strict";
 
   /* ---------- Helpers ---------- */
+  if (!Element.prototype.matches) {
+    Element.prototype.matches = Element.prototype.msMatchesSelector || Element.prototype.webkitMatchesSelector;
+  }
+  if (!Element.prototype.closest) {
+    Element.prototype.closest = function (sel) {
+      var el = this;
+      while (el && el.nodeType === 1) {
+        if (el.matches(sel)) return el;
+        el = el.parentNode;
+      }
+      return null;
+    };
+  }
   function $(sel, root) {
     return (root || document).querySelector(sel);
   }
@@ -35,9 +48,14 @@
   }
 
   var esc = escapeHtml; // from products.js
-  var money = new Intl.NumberFormat("en-US", { style: "currency", currency: STORE.currency });
+  var money = null;
+  try {
+    money = new Intl.NumberFormat("en-US", { style: "currency", currency: STORE.currency });
+  } catch (e) {
+    /* very old browsers: fall back to a plain format */
+  }
   function fmt(n) {
-    return money.format(n);
+    return money ? money.format(n) : "$" + Number(n).toFixed(2);
   }
 
   var storage = {
@@ -107,8 +125,16 @@
     root.style.scrollBehavior = prev;
   }
 
-  function route() {
-    var hash = decodeURIComponent(location.hash.slice(1));
+  function currentHash() {
+    try {
+      return decodeURIComponent(location.hash.slice(1));
+    } catch (e) {
+      return "";
+    }
+  }
+
+  function route(hash) {
+    if (typeof hash !== "string") hash = currentHash();
     var view = VIEWS.indexOf(hash) >= 0 ? hash : "home";
     var target = null;
     if (hash && VIEWS.indexOf(hash) < 0) {
@@ -130,11 +156,28 @@
     if (target) target.scrollIntoView();
     else jumpToTop();
   }
-  window.addEventListener("hashchange", route);
-  // Tapping the tab you're already on doesn't fire hashchange, so route again to jump to its top.
+  // Tabs and in-page links are handled here instead of by the browser, because some
+  // viewers (embedded previews, in-app browsers) block or ignore "#" link navigation.
+  // The address bar is updated when allowed so Back still works.
+  function go(hash) {
+    try {
+      if (location.hash !== "#" + hash) history.pushState(null, "", "#" + hash);
+    } catch (e) {
+      /* history not available here — the tab still switches */
+    }
+    route(hash);
+  }
   document.addEventListener("click", function (e) {
-    var a = e.target.closest && e.target.closest('a[href^="#"]');
-    if (a && a.getAttribute("href") === location.hash) route();
+    var a = e.target.closest('a[href^="#"]');
+    if (!a) return;
+    e.preventDefault();
+    go(a.getAttribute("href").slice(1));
+  });
+  window.addEventListener("hashchange", function () {
+    route();
+  });
+  window.addEventListener("popstate", function () {
+    route();
   });
 
   /* ---------- Shop ---------- */
@@ -919,4 +962,8 @@
   renderCart();
   updateEstimate();
   route();
+
+  // Everything loaded, so hide the "buttons can't run here" warning.
+  var warning = document.getElementById("js-warning");
+  if (warning) warning.parentNode.removeChild(warning);
 })();
