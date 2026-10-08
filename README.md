@@ -11,9 +11,22 @@ The site has five tabs across the top: **Home**, **Shop**, **Custom**, **Cart** 
 - **Custom**: a form to design a custom item (name, description, files, size, quantity, material, colour, finish, deadline) with a live price that adds the item straight to the cart
 - **Cart**: every item with its description, chosen options and price, plus the checkout form
 - **Orders**: every order placed on this device, with items, prices, date and shipping details
-- **Shop owner page**: linked as "Shop owner" in the footer and protected by a PIN (`STORE.ownerPin` in `js/products.js`). Add products with a name, price, category, description, colours and an optional photo.
+- **Shop owner page**: linked as "Shop owner" in the footer and protected by a PIN (`STORE.ownerPin` in `js/products.js`). Once unlocked:
+  - every product card in Featured and Shop gets an **Edit** button
+  - change any product's photo (chosen from Photos on a phone), name, price, category, description, details, colours, badge and whether it's featured
+  - add or delete products
+  - change the home page banner picture
 
-Products added on the owner page are stored in that browser only. To show them to all customers, use "Copy product list" and add the entries to `PRODUCTS` in `js/products.js`. The PIN only hides the page from casual visitors; it isn't real security.
+### Publishing changes
+
+Owner edits are first saved only in that browser as unpublished changes. **Publish to website** sends them to GitHub using the contents API:
+
+- each new photo is saved as a JPEG in `images/`
+- the full product list and banner picture are saved to `data/shop.json`
+
+GitHub Pages then rebuilds, and every visitor gets the new `data/shop.json` within a minute or two. When `data/shop.json` exists it replaces the built-in `PRODUCTS` in `js/products.js`.
+
+Publishing needs a one-time GitHub fine-grained personal access token with **Contents: Read and write** on this repository only. The owner page explains how to make one. The token is stored in that browser's localStorage. The PIN only hides the page from casual visitors; the token is what actually protects the repository.
 
 The code avoids recent JavaScript syntax so it runs on older phones and browsers.
 

@@ -325,7 +325,7 @@
           </div>
 
           <form class="panel" id="owner-login" novalidate>
-            <p>This page is for the shop owner. Enter your PIN to add products to the shop.</p>
+            <p>This page is for the shop owner. Enter your PIN to change products, pictures and the home page banner.</p>
             <div class="field">
               <label for="owner-pin">PIN</label>
               <input type="password" id="owner-pin" inputmode="numeric" autocomplete="off" required>
@@ -334,8 +334,45 @@
           </form>
 
           <div id="owner-panel" hidden>
-            <form class="panel" id="product-form" novalidate>
-              <h3>Add a product</h3>
+            <div class="panel" id="publish-panel">
+              <h3>Website</h3>
+              <p class="publish-status" id="publish-status"></p>
+              <div class="button-row">
+                <button type="button" class="btn btn-primary" id="publish-btn">Publish to website</button>
+                <button type="button" class="btn btn-outline" id="discard-btn">Discard changes</button>
+              </div>
+              <details class="gh-setup" id="gh-setup">
+                <summary id="gh-summary">Set up publishing (one time)</summary>
+                <ol class="setup-steps">
+                  <li>On GitHub, open <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">Settings → Developer settings → Fine-grained tokens → Generate new token</a>.</li>
+                  <li>Name it “Shop publishing”, set an expiry, and under <strong>Repository access</strong> choose <strong>Only select repositories → Ai-app</strong>.</li>
+                  <li>Under <strong>Permissions → Repository permissions</strong>, set <strong>Contents</strong> to <strong>Read and write</strong>.</li>
+                  <li>Tap <strong>Generate token</strong>, copy it, and paste it below.</li>
+                </ol>
+                <div class="field">
+                  <label for="gh-token">GitHub token</label>
+                  <input type="password" id="gh-token" autocomplete="off" spellcheck="false" placeholder="github_pat_…">
+                </div>
+                <div class="button-row">
+                  <button type="button" class="btn btn-primary" id="gh-save">Save token</button>
+                  <button type="button" class="btn btn-outline" id="gh-forget" hidden>Remove token</button>
+                </div>
+                <p class="form-note">The token is saved only on this device. Treat it like a password.</p>
+              </details>
+            </div>
+
+            <form class="panel" id="product-form" novalidate hidden>
+              <h3 id="editor-title">Edit product</h3>
+              <div class="field">
+                <span class="label">Picture</span>
+                <div class="photo-edit">
+                  <div class="photo-preview" id="p-preview"></div>
+                  <div class="photo-actions">
+                    <label class="btn btn-outline file-btn">Choose from Photos<input type="file" id="p-image" accept="image/*"></label>
+                    <button type="button" class="link-btn remove" id="p-image-remove">Use the drawing instead</button>
+                  </div>
+                </div>
+              </div>
               <div class="field">
                 <label for="p-name">Product name</label>
                 <input id="p-name" name="name" maxlength="60" required>
@@ -368,18 +405,33 @@
                   <input id="p-badge" name="badge" maxlength="16" placeholder="e.g. New">
                 </div>
                 <div class="field">
-                  <label for="p-image">Photo <span class="optional">(optional)</span></label>
-                  <input id="p-image" type="file" accept="image/*">
+                  <span class="label">Home page</span>
+                  <label class="check"><input type="checkbox" id="p-featured" name="featured" value="yes"> Show in Featured prints</label>
                 </div>
               </div>
-              <button class="btn btn-primary btn-block" type="submit">Add to shop</button>
+              <div class="button-row">
+                <button class="btn btn-primary" type="submit" id="editor-save">Save product</button>
+                <button class="btn btn-outline" type="button" id="editor-cancel">Cancel</button>
+              </div>
             </form>
 
             <div class="panel">
-              <h3>Products you've added</h3>
+              <h3>Home page banner picture</h3>
+              <div class="photo-edit">
+                <div class="photo-preview photo-preview-wide" id="hero-preview"></div>
+                <div class="photo-actions">
+                  <label class="btn btn-outline file-btn">Choose from Photos<input type="file" id="hero-image" accept="image/*"></label>
+                  <button type="button" class="link-btn remove" id="hero-reset">Use the printer drawing</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-head">
+                <h3>Products</h3>
+                <button type="button" class="btn btn-small" id="product-new">Add new product</button>
+              </div>
               <div id="owner-products"></div>
-              <p class="form-note">Products you add here are saved in this browser, so only you can see them for now. To show them to every customer, tap “Copy product list” and send it to your developer to add to <code>js/products.js</code>.</p>
-              <button type="button" class="btn btn-outline btn-block" id="owner-copy">Copy product list</button>
             </div>
           </div>
         </div>

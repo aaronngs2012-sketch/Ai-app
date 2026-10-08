@@ -1,6 +1,7 @@
 /*
  * Product catalogue and store settings.
- * Edit this file to add, remove or re-price items — no other code changes needed.
+ * These are the built-in products. Once you publish from the Shop owner page,
+ * the website uses data/shop.json instead, so edit products there.
  *
  * `art` picks one of the built-in SVG illustrations in ART below. To use a real
  * photo instead, set `image: "images/your-photo.jpg"` on the product.
@@ -21,6 +22,9 @@ var STORE = {
   // This only hides the page from casual visitors — it is not real security,
   // since anyone can read this file.
   ownerPin: "2012",
+  // Where "Publish to website" on the Shop owner page saves changes.
+  githubRepo: "aaronngs2012-sketch/Ai-app",
+  githubBranch: "claude/3d-print-sales-website-pu768l",
 };
 
 var COLORS = {

@@ -3,7 +3,7 @@
  * Written to run on older phones and browsers as well as new ones: no async/await,
  * object spread, optional catch bindings or other recent syntax.
  */
-(function () {
+function startShop(published) {
   "use strict";
 
   /* ---------- Helpers ---------- */
@@ -67,6 +67,13 @@
         return fallback;
       }
     },
+    remove: function (key) {
+      try {
+        localStorage.removeItem(key);
+      } catch (e) {
+        /* ignore */
+      }
+    },
     set: function (key, value, session) {
       try {
         (session ? sessionStorage : localStorage).setItem(key, JSON.stringify(value));
@@ -89,13 +96,50 @@
     }, 2600);
   }
 
-  /* ---------- Owner-added products ---------- */
-  var ownerProducts = storage.get("lw3d-owner-products", []).filter(function (p) {
-    return p && p.id && p.name && typeof p.price === "number";
-  });
-  ownerProducts.forEach(function (p) {
-    PRODUCTS.push(p);
-  });
+  /* ---------- Shop data ---------- */
+  // The website shows data/shop.json when it has been published from the Shop owner
+  // page, otherwise the built-in products from products.js. Edits the owner hasn't
+  // published yet are kept as a draft in this browser only, so only they see them.
+  function clone(x) {
+    return JSON.parse(JSON.stringify(x));
+  }
+  var DRAFT_KEY = "lw3d-draft";
+  var base = {
+    products: published ? published.products : clone(PRODUCTS),
+    heroImage: (published && published.heroImage) || "",
+    updated: (published && published.updated) || 0,
+  };
+  var draft = storage.get(DRAFT_KEY, null);
+  if (draft && !(draft.products && draft.products.length >= 0 && draft.products.forEach)) draft = null;
+  // Once the website has caught up with what was published, the draft is no longer needed.
+  if (draft && draft.publishedAt && base.updated >= draft.publishedAt) {
+    draft = null;
+    storage.remove(DRAFT_KEY);
+  }
+  // Products added with the earlier version of the owner page.
+  var legacy = storage.get("lw3d-owner-products", []);
+  if (legacy && legacy.length) {
+    if (!draft) draft = { products: clone(base.products).concat(legacy), heroImage: base.heroImage };
+    storage.set(DRAFT_KEY, draft);
+    storage.remove("lw3d-owner-products");
+  }
+
+  function activeData() {
+    return draft || base;
+  }
+  var heroArt = $(".hero-art");
+  var heroDrawing = heroArt.innerHTML;
+  function applyData() {
+    var d = activeData();
+    PRODUCTS.length = 0;
+    d.products.forEach(function (p) {
+      PRODUCTS.push(p);
+    });
+    heroArt.classList.toggle("has-photo", !!d.heroImage);
+    heroArt.innerHTML = d.heroImage ? '<img class="hero-photo" src="' + esc(d.heroImage) + '" alt="">' : heroDrawing;
+  }
+  applyData();
+
   function productById(id) {
     return find(PRODUCTS, function (p) {
       return p.id === id;
@@ -208,6 +252,7 @@
     var colors = p.colors || [];
     return (
       '<article class="card">' +
+      (ownerUnlocked ? '<button type="button" class="edit-chip" data-edit="' + esc(p.id) + '">Edit</button>' : "") +
       '<button type="button" class="card-media" data-open="' + esc(p.id) + '" aria-label="View ' + esc(p.name) + '">' +
       (p.badge ? '<span class="badge">' + esc(p.badge) + "</span>" : "") +
       productArt(p, colors[0]) +
@@ -235,7 +280,8 @@
   }
 
   function renderFeatured() {
-    var featured = PRODUCTS.filter(function (p) { return p.badge; }).slice(0, 4);
+    // Owner-chosen featured items, or items with a badge if none were chosen.
+    var featured = PRODUCTS.filter(function (p) { return p.featured === true || (p.featured === undefined && p.badge); }).slice(0, 4);
     $("#featured-grid").innerHTML = featured.map(cardHtml).join("");
   }
 
@@ -261,6 +307,12 @@
     renderProducts();
   });
   function onGridClick(e) {
+    var edit = e.target.closest("[data-edit]");
+    if (edit) {
+      go("manage");
+      openEditor(edit.dataset.edit);
+      return;
+    }
     var open = e.target.closest("[data-open]");
     if (open) return openProduct(open.dataset.open);
     var add = e.target.closest("[data-quick-add]");
@@ -809,17 +861,24 @@
 
   /* ---------- Shop owner page ---------- */
   var OWNER_KEY = "lw3d-owner";
+  var TOKEN_KEY = "lw3d-gh-token";
+  var ownerUnlocked = false;
   var ownerLogin = $("#owner-login");
   var ownerPanel = $("#owner-panel");
   var productForm = $("#product-form");
-  var pendingImage = "";
+  var editingId = null; // null while adding a new product
+  var pendingImage; // undefined = keep current picture, "" = use the drawing, data URL = new photo
+  var discardArmed = false;
 
   function setOwnerUnlocked(on) {
+    ownerUnlocked = on;
     storage.set(OWNER_KEY, on, true);
     ownerLogin.hidden = on;
     ownerPanel.hidden = !on;
     $("#owner-lock").hidden = !on;
-    if (on) renderOwnerProducts();
+    if (on) renderOwner();
+    else closeEditor();
+    renderShop();
   }
 
   ownerLogin.addEventListener("submit", function (e) {
@@ -838,36 +897,127 @@
     setOwnerUnlocked(false);
   });
 
-  $("#p-category").innerHTML = CATEGORIES.filter(function (c) { return c.id !== "all"; }).map(function (c) {
-    return '<option value="' + c.id + '">' + esc(c.label) + "</option>";
-  }).join("");
-  $("#p-colors").innerHTML = Object.keys(COLORS).map(function (k, i) {
-    return '<label class="chip chip-color"><input type="checkbox" name="colors" value="' + k + '"' + (i === 0 ? " checked" : "") + '>' +
-      '<span><i style="background:' + COLORS[k].hex + '"></i>' + COLORS[k].name + "</span></label>";
-  }).join("");
+  // Applies a change to a copy of the shop data, saves it as this browser's draft,
+  // and refreshes the page. Returns false if the browser couldn't save it.
+  function editShop(change) {
+    var next = clone(activeData());
+    delete next.updated;
+    change(next);
+    if (!storage.set(DRAFT_KEY, next)) {
+      toast("This device is out of space for photos. Publish your changes, then try again.");
+      return false;
+    }
+    draft = next;
+    applyData();
+    cart = cart.filter(function (l) {
+      return l.kind === "custom" || productById(l.id);
+    });
+    saveCart();
+    renderShop();
+    renderOwner();
+    return true;
+  }
 
-  // Shrink photos so they fit in browser storage.
-  $("#p-image").addEventListener("change", function (e) {
-    pendingImage = "";
-    var file = e.target.files && e.target.files[0];
-    if (!file) return;
+  // Shrinks a chosen photo so it loads quickly and fits in browser storage.
+  function readPhoto(file, maxSize, done) {
     var reader = new FileReader();
     reader.onload = function () {
       var img = new Image();
       img.onload = function () {
-        var scale = Math.min(1, 600 / Math.max(img.width, img.height));
+        var scale = Math.min(1, maxSize / Math.max(img.width, img.height));
         var canvas = document.createElement("canvas");
         canvas.width = Math.round(img.width * scale);
         canvas.height = Math.round(img.height * scale);
-        canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
-        pendingImage = canvas.toDataURL("image/jpeg", 0.82);
+        var ctx = canvas.getContext("2d");
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        done(canvas.toDataURL("image/jpeg", 0.82));
       };
       img.onerror = function () {
-        toast("That photo couldn't be read. Try a JPG or PNG.");
+        toast("That photo couldn't be opened. Try a different one.");
       };
       img.src = reader.result;
     };
     reader.readAsDataURL(file);
+  }
+
+  /* Product editor */
+  $("#p-category").innerHTML = CATEGORIES.filter(function (c) { return c.id !== "all"; }).map(function (c) {
+    return '<option value="' + c.id + '">' + esc(c.label) + "</option>";
+  }).join("");
+  $("#p-colors").innerHTML = Object.keys(COLORS).map(function (k) {
+    return '<label class="chip chip-color"><input type="checkbox" name="colors" value="' + k + '">' +
+      '<span><i style="background:' + COLORS[k].hex + '"></i>' + COLORS[k].name + "</span></label>";
+  }).join("");
+
+  function editorProduct() {
+    var p = editingId ? clone(productById(editingId)) : { name: "New product", art: "custom", colors: [] };
+    if (pendingImage !== undefined) {
+      if (pendingImage) p.image = pendingImage;
+      else delete p.image;
+    }
+    if (!p.art) p.art = "custom";
+    return p;
+  }
+  function renderPreview() {
+    var p = editorProduct();
+    var checked = $$("[name=colors]:checked", productForm)[0];
+    $("#p-preview").innerHTML = productArt(p, checked ? checked.value : (p.colors || [])[0]);
+    $("#p-image-remove").hidden = !p.image;
+  }
+
+  function openEditor(id) {
+    var p = id ? productById(id) : null;
+    if (id && !p) return;
+    editingId = id || null;
+    pendingImage = undefined;
+    productForm.reset();
+    $$(".field", productForm).forEach(function (f) { setError(f, ""); });
+    $("#editor-title").textContent = p ? "Edit “" + p.name + "”" : "Add a product";
+    $("#editor-save").textContent = p ? "Save changes" : "Add to shop";
+    $("#p-name").value = p ? p.name : "";
+    $("#p-price").value = p ? p.price : "";
+    $("#p-category").value = p ? p.category : "home";
+    $("#p-desc").value = p ? p.description : "";
+    $("#p-specs").value = p ? (p.specs || []).join("\n") : "";
+    $("#p-badge").value = p && p.badge ? p.badge : "";
+    $("#p-featured").checked = p ? p.featured === true || (p.featured === undefined && !!p.badge) : false;
+    var colors = p ? p.colors || [] : [Object.keys(COLORS)[0]];
+    $$("[name=colors]", productForm).forEach(function (el) {
+      el.checked = colors.indexOf(el.value) >= 0;
+    });
+    productForm.hidden = false;
+    renderPreview();
+    productForm.scrollIntoView();
+    $("#p-name").focus();
+  }
+  function closeEditor() {
+    productForm.hidden = true;
+    editingId = null;
+    pendingImage = undefined;
+  }
+
+  $("#p-image").addEventListener("change", function (e) {
+    var file = e.target.files && e.target.files[0];
+    if (!file) return;
+    readPhoto(file, 800, function (url) {
+      pendingImage = url;
+      renderPreview();
+    });
+    e.target.value = "";
+  });
+  $("#p-image-remove").addEventListener("click", function () {
+    pendingImage = "";
+    renderPreview();
+  });
+  $("#p-colors").addEventListener("change", renderPreview);
+  $("#editor-cancel").addEventListener("click", function () {
+    closeEditor();
+    $("#owner-products").scrollIntoView();
+  });
+  $("#product-new").addEventListener("click", function () {
+    openEditor(null);
   });
 
   productForm.addEventListener("submit", function (e) {
@@ -877,82 +1027,250 @@
     setError($("#p-colors").closest(".field"), colors.length ? "" : "Choose at least one colour.");
     if (!ok || !colors.length) return;
     var d = formValues(productForm);
-    var product = {
-      id: "own-" + Date.now(),
-      name: d.name,
-      category: d.category,
-      price: Math.round(Number(d.price) * 100) / 100,
-      art: "custom",
-      colors: colors,
-      description: d.description,
-      specs: (d.specs || "").split("\n").map(function (s) { return s.trim(); }).filter(Boolean),
-      owner: true,
-    };
-    if (d.badge) product.badge = d.badge;
-    if (pendingImage) product.image = pendingImage;
-    if (!storage.set("lw3d-owner-products", ownerProducts.concat([product]))) {
-      toast("Couldn't save. The photo may be too large, so try a smaller one or none.");
-      return;
-    }
-    ownerProducts.push(product);
-    PRODUCTS.push(product);
-    productForm.reset();
-    pendingImage = "";
-    renderShop();
-    renderOwnerProducts();
-    toast(product.name + " added to the shop");
+    var p = editorProduct();
+    p.id = editingId || "own-" + Date.now();
+    p.name = d.name;
+    p.price = Math.round(Number(d.price) * 100) / 100;
+    p.category = d.category;
+    p.description = d.description;
+    p.specs = (d.specs || "").split("\n").map(function (x) { return x.trim(); }).filter(Boolean);
+    p.colors = colors;
+    p.featured = $("#p-featured").checked;
+    if (d.badge) p.badge = d.badge;
+    else delete p.badge;
+    var adding = !editingId;
+    var saved = editShop(function (data) {
+      if (adding) data.products.push(p);
+      else
+        data.products = data.products.map(function (x) {
+          return x.id === p.id ? p : x;
+        });
+    });
+    if (!saved) return;
+    closeEditor();
+    toast(adding ? p.name + " added to the shop" : p.name + " updated");
+    $("#owner-products").scrollIntoView();
   });
 
+  /* Product list */
   function renderOwnerProducts() {
-    var box = $("#owner-products");
-    $("#owner-copy").hidden = ownerProducts.length === 0;
-    if (!ownerProducts.length) {
-      box.innerHTML = '<p class="cart-meta">You haven\'t added any products yet. Use the form above and they\'ll appear in the Shop tab.</p>';
+    $("#owner-products").innerHTML = PRODUCTS.length
+      ? PRODUCTS.map(function (p) {
+          return (
+            '<div class="cart-line" data-owner-id="' + esc(p.id) + '">' +
+            '<div class="cart-thumb">' + productArt(p, (p.colors || [])[0]) + "</div>" +
+            '<div class="cart-info"><p class="cart-name">' + esc(p.name) + (p.image ? "" : ' <span class="pill">Drawing</span>') + "</p>" +
+            '<p class="cart-desc">' + esc(categoryLabel(p.category)) + " · " + fmt(p.price) + "</p></div>" +
+            '<div class="cart-right owner-actions"><button type="button" class="btn btn-small" data-owner-edit>Edit</button>' +
+            '<button type="button" class="link-btn remove" data-owner-delete>Delete</button></div>' +
+            "</div>"
+          );
+        }).join("")
+      : '<p class="cart-meta">There are no products in the shop. Tap “Add new product” to add one.</p>';
+  }
+  var deleteArmed = null;
+  $("#owner-products").addEventListener("click", function (e) {
+    var row = e.target.closest("[data-owner-id]");
+    if (!row) return;
+    var id = row.dataset.ownerId;
+    if (e.target.closest("[data-owner-edit]")) return openEditor(id);
+    var del = e.target.closest("[data-owner-delete]");
+    if (!del) return;
+    // Ask for a second tap rather than a confirm() dialog, which some viewers block.
+    if (deleteArmed !== id) {
+      deleteArmed = id;
+      del.textContent = "Tap again to delete";
       return;
     }
-    box.innerHTML = ownerProducts.map(function (p) {
-      return (
-        '<div class="cart-line" data-owner-id="' + esc(p.id) + '">' +
-        '<div class="cart-thumb">' + productArt(p, p.colors[0]) + "</div>" +
-        '<div class="cart-info"><p class="cart-name">' + esc(p.name) + '</p><p class="cart-desc">' + esc(categoryLabel(p.category)) + " · " + fmt(p.price) + "</p></div>" +
-        '<div class="cart-right"><a class="link-btn" href="#shop">View</a><br><button type="button" class="link-btn remove" data-owner-delete>Delete</button></div>' +
-        "</div>"
-      );
-    }).join("");
+    deleteArmed = null;
+    var name = productById(id).name;
+    if (editingId === id) closeEditor();
+    if (editShop(function (data) {
+      data.products = data.products.filter(function (x) { return x.id !== id; });
+    })) toast(name + " deleted");
+  });
+
+  /* Home banner */
+  function renderHeroPreview() {
+    var img = activeData().heroImage;
+    $("#hero-preview").innerHTML = img ? '<img src="' + esc(img) + '" alt="Home page banner">' : '<span class="cart-meta">Printer drawing</span>';
+    $("#hero-reset").hidden = !img;
+  }
+  $("#hero-image").addEventListener("change", function (e) {
+    var file = e.target.files && e.target.files[0];
+    if (!file) return;
+    readPhoto(file, 1200, function (url) {
+      if (editShop(function (data) { data.heroImage = url; })) toast("Banner picture changed");
+    });
+    e.target.value = "";
+  });
+  $("#hero-reset").addEventListener("click", function () {
+    if (editShop(function (data) { data.heroImage = ""; })) toast("Banner set back to the drawing");
+  });
+
+  /* Publishing to GitHub */
+  function token() {
+    return storage.get(TOKEN_KEY, "");
+  }
+  function renderPublish() {
+    var has = !!token();
+    var status;
+    if (draft && draft.publishedAt) status = "Published! The website updates for everyone in about 1–2 minutes.";
+    else if (draft) status = "You have changes that only you can see. Tap “Publish to website” so customers see them.";
+    else status = "The website is up to date.";
+    $("#publish-status").textContent = status;
+    $("#publish-status").classList.toggle("is-pending", !!draft && !draft.publishedAt);
+    $("#publish-btn").disabled = !draft || !!draft.publishedAt;
+    $("#discard-btn").hidden = !draft || !!draft.publishedAt;
+    $("#discard-btn").textContent = "Discard changes";
+    discardArmed = false;
+    $("#gh-summary").textContent = has ? "Publishing is set up ✓ (change token)" : "Set up publishing (one time)";
+    $("#gh-forget").hidden = !has;
+  }
+  function renderOwner() {
+    renderOwnerProducts();
+    renderHeroPreview();
+    renderPublish();
   }
 
-  $("#owner-products").addEventListener("click", function (e) {
-    if (!e.target.closest("[data-owner-delete]")) return;
-    var id = e.target.closest("[data-owner-id]").dataset.ownerId;
-    ownerProducts = ownerProducts.filter(function (p) { return p.id !== id; });
-    var idx = PRODUCTS.indexOf(productById(id));
-    if (idx >= 0) PRODUCTS.splice(idx, 1);
-    storage.set("lw3d-owner-products", ownerProducts);
-    cart = cart.filter(function (l) { return l.id !== id; });
-    saveCart();
-    renderShop();
-    renderOwnerProducts();
-    toast("Product deleted");
+  $("#gh-save").addEventListener("click", function () {
+    var input = $("#gh-token");
+    var v = input.value.trim();
+    if (!/^(github_pat_|ghp_)[A-Za-z0-9_]{20,}$/.test(v)) {
+      setError(input.closest(".field"), "That doesn't look like a GitHub token. It starts with github_pat_.");
+      return;
+    }
+    setError(input.closest(".field"), "");
+    storage.set(TOKEN_KEY, v);
+    input.value = "";
+    $("#gh-setup").open = false;
+    renderPublish();
+    toast("Token saved. You can publish now.");
+  });
+  $("#gh-forget").addEventListener("click", function () {
+    storage.remove(TOKEN_KEY);
+    renderPublish();
+    toast("Token removed from this device");
   });
 
-  $("#owner-copy").addEventListener("click", function () {
-    var text = JSON.stringify(ownerProducts, null, 2);
-    function fallback() {
-      showMessage(
-        "Your product list",
-        '<p>Select all of this text, copy it, and send it to your developer.</p><textarea class="copy-box" readonly rows="8">' + esc(text) + "</textarea>"
-      );
-      var box = $("#message-body .copy-box");
-      box.focus();
-      box.select();
+  $("#discard-btn").addEventListener("click", function () {
+    if (!discardArmed) {
+      discardArmed = true;
+      $("#discard-btn").textContent = "Tap again to discard";
+      return;
     }
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(function () {
-        toast("Product list copied");
-      }, fallback);
-    } else {
-      fallback();
+    draft = null;
+    storage.remove(DRAFT_KEY);
+    closeEditor();
+    applyData();
+    renderShop();
+    renderCart();
+    renderOwner();
+    toast("Changes discarded");
+  });
+
+  function utf8ToBase64(str) {
+    return btoa(unescape(encodeURIComponent(str)));
+  }
+  function github(method, path, body) {
+    var url = "https://api.github.com/repos/" + STORE.githubRepo + "/contents/" + path;
+    if (method === "GET") url += "?ref=" + encodeURIComponent(STORE.githubBranch);
+    return fetch(url, {
+      method: method,
+      headers: {
+        Authorization: "Bearer " + token(),
+        Accept: "application/vnd.github+json",
+        "Content-Type": "application/json",
+      },
+      body: body ? JSON.stringify(body) : undefined,
+    }).then(function (res) {
+      if (method === "GET" && res.status === 404) return null;
+      return res.json().then(
+        function (j) { return { res: res, json: j }; },
+        function () { return { res: res, json: {} }; }
+      ).then(function (r) {
+        if (!r.res.ok) {
+          var err = new Error(r.json.message || "GitHub error " + r.res.status);
+          err.status = r.res.status;
+          throw err;
+        }
+        return r.json;
+      });
+    });
+  }
+  function putFile(path, base64, message, sha) {
+    var body = { message: message, content: base64, branch: STORE.githubBranch };
+    if (sha) body.sha = sha;
+    return github("PUT", path, body);
+  }
+  function publishError(err) {
+    if (err.status === 401) return "GitHub didn't accept your token. It may be wrong or expired. Set up publishing again with a new token.";
+    if (err.status === 403 || err.status === 404) return "Your token doesn't have permission to change Ai-app. Make a new token with Contents set to “Read and write” for Ai-app.";
+    if (err.status === 409 || err.status === 422) return "GitHub was busy saving another change. Wait a few seconds and tap Publish again.";
+    return "Publishing didn't finish (" + err.message + "). Check your internet connection and try again.";
+  }
+
+  $("#publish-btn").addEventListener("click", function () {
+    if (!draft) return;
+    if (!token()) {
+      $("#gh-setup").open = true;
+      $("#gh-setup").scrollIntoView();
+      toast("Set up publishing first. It only takes a minute.");
+      return;
     }
+    var btn = $("#publish-btn");
+    var status = $("#publish-status");
+    var data = clone(draft);
+    delete data.publishedAt;
+    var stamp = Date.now();
+    // Photos are uploaded as files and the products then point at them.
+    var uploads = [];
+    data.products.forEach(function (p) {
+      if (p.image && p.image.indexOf("data:") === 0) {
+        uploads.push({ target: p, key: "image", path: "images/" + String(p.id).replace(/[^a-z0-9-]/gi, "") + "-" + stamp + ".jpg" });
+      }
+    });
+    if (data.heroImage && data.heroImage.indexOf("data:") === 0) {
+      uploads.push({ target: data, key: "heroImage", path: "images/banner-" + stamp + ".jpg" });
+    }
+    btn.disabled = true;
+    var chain = Promise.resolve();
+    uploads.forEach(function (u, i) {
+      chain = chain.then(function () {
+        status.textContent = "Uploading photo " + (i + 1) + " of " + uploads.length + "…";
+        return putFile(u.path, u.target[u.key].split(",")[1], "Add photo " + u.path).then(function () {
+          u.target[u.key] = u.path;
+        });
+      });
+    });
+    chain
+      .then(function () {
+        status.textContent = "Saving products…";
+        return github("GET", "data/shop.json");
+      })
+      .then(function (existing) {
+        data.updated = stamp;
+        return putFile("data/shop.json", utf8ToBase64(JSON.stringify(data, null, 2) + "\n"), "Update shop from the owner page", existing && existing.sha);
+      })
+      .then(function () {
+        data.publishedAt = stamp;
+        delete data.updated;
+        draft = data;
+        storage.set(DRAFT_KEY, draft);
+        applyData();
+        renderShop();
+        renderOwner();
+        toast("Published to the website");
+      })
+      .catch(function (err) {
+        // Keep any photos that did upload, so a retry doesn't send them again.
+        delete data.updated;
+        draft = data;
+        storage.set(DRAFT_KEY, draft);
+        btn.disabled = false;
+        status.textContent = publishError(err);
+        status.classList.add("is-pending");
+      });
   });
 
   /* ---------- Init ---------- */
@@ -967,4 +1285,34 @@
   // Everything loaded, so hide the "buttons can't run here" warning.
   var warning = document.getElementById("js-warning");
   if (warning) warning.parentNode.removeChild(warning);
+}
+
+// Load published shop data (if any), then start. Falls back to the built-in
+// products when there's nothing published or the file can't be fetched.
+(function () {
+  var started = false;
+  function begin(data) {
+    if (started) return;
+    started = true;
+    startShop(data && data.products && data.products.forEach ? data : null);
+  }
+  var timer = setTimeout(function () {
+    begin(null);
+  }, 4000);
+  function done(data) {
+    clearTimeout(timer);
+    begin(data);
+  }
+  try {
+    if (!window.fetch || location.protocol === "file:") return done(null);
+    fetch("data/shop.json?t=" + Date.now(), { cache: "no-store" })
+      .then(function (res) {
+        return res.ok ? res.json() : null;
+      })
+      .then(done, function () {
+        done(null);
+      });
+  } catch (e) {
+    done(null);
+  }
 })();
