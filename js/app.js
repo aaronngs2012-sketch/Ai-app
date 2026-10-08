@@ -309,6 +309,7 @@
   /* ---------- Sending orders & quotes ---------- */
   // Posts to STORE.formEndpoint if configured, otherwise opens a pre-filled email.
   async function send(subject, fields) {
+    if (STORE.previewMode) return "preview";
     if (STORE.formEndpoint) {
       const res = await fetch(STORE.formEndpoint, {
         method: "POST",
@@ -391,7 +392,9 @@
       closeModal($("#message-modal"));
       showMessage(
         "Thanks for your order!",
-        how === "sent"
+        how === "preview"
+          ? `<p>This is a preview, so nothing was sent and no order was placed. On the live site this order would go to ${escapeHtml(STORE.contactEmail)}.</p>`
+          : how === "sent"
           ? `<p>We've received your order and will email <strong>${escapeHtml(data.email)}</strong> a payment link shortly.</p>`
           : `<p>Your email app should open with your order details — just hit send and we'll reply with a payment link.</p>`
       );
@@ -542,7 +545,9 @@
           : "";
       showMessage(
         "Quote request received!",
-        how === "sent"
+        how === "preview"
+          ? `<p>This is a preview, so nothing was sent. On the live site this quote request would go to ${escapeHtml(STORE.contactEmail)}.</p>`
+          : how === "sent"
           ? `<p>Thanks ${escapeHtml(data.name)}! We'll review your project and email <strong>${escapeHtml(data.email)}</strong> a firm quote within 24 hours.</p>`
           : `<p>Thanks ${escapeHtml(data.name)}! Your email app should open with your request filled in — hit send and we'll reply with a quote within 24 hours.</p>${fileHint}`
       );

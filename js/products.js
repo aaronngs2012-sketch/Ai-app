@@ -15,6 +15,8 @@ const STORE = {
   // custom-order requests and checkout orders as JSON. Leave empty to fall back
   // to opening the customer's email app with the details filled in.
   formEndpoint: "",
+  // When true, forms show a confirmation without sending anything (for demos).
+  previewMode: false,
 };
 
 const COLORS = {
