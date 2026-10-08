@@ -403,7 +403,11 @@ textarea {
   font-size: 0.9rem;
 }
 
-/* Animated printer illustration */
+/* Animated printer illustration
+ * Everything is placed in % of the printer box, so the nozzle tip always sits on
+ * top of the layer being printed at any screen size. Layers are 3.4% tall on a
+ * 3.8% pitch above the bed, and each layer takes 6% of the 8 s loop.
+ * (Generated: change the numbers together, not one at a time.) */
 .hero-art {
   display: grid;
   place-items: center;
@@ -412,7 +416,13 @@ textarea {
 .printer {
   position: relative;
   width: min(380px, 100%);
-  aspect-ratio: 1 / 1.05;
+}
+
+/* Keeps the box 1 : 1.05, including on browsers without aspect-ratio */
+.printer::before {
+  content: "";
+  display: block;
+  padding-top: 105%;
 }
 
 .printer-frame {
@@ -426,93 +436,241 @@ textarea {
   border-radius: 18px;
 }
 
-.printer-gantry {
-  position: absolute;
-  left: 6%;
-  right: 6%;
-  height: 12px;
-  background: #8a909b;
-  top: 30%;
-  animation: gantry 8s ease-in-out infinite;
-}
-
-.printer-head {
-  position: absolute;
-  top: -18px;
-  width: 44px;
-  height: 46px;
-  border-radius: 8px;
-  background: var(--primary);
-  left: 30%;
-  animation: head 1.6s ease-in-out infinite alternate;
-}
-
-.printer-head::after {
-  content: "";
-  position: absolute;
-  bottom: -10px;
-  left: 50%;
-  transform: translateX(-50%);
-  border: 8px solid transparent;
-  border-top: 10px solid #555;
-  border-bottom: 0;
-}
-
 .printer-bed {
   position: absolute;
   left: 16%;
   right: 16%;
   bottom: 12%;
-  height: 10px;
+  height: 2.4%;
   border-radius: 4px;
   background: #8a909b;
 }
 
-.printer-object {
+.printer-layers {
   position: absolute;
-  bottom: calc(12% + 10px);
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.printer-layers span {
+  position: absolute;
+  height: 3.4%;
+  border-radius: 3px;
+}
+
+.printer-layers span:nth-child(1) { bottom: 14.4%; left: 27%; width: 46%; background: #2f7de1; transform-origin: left center; -webkit-animation: layer-1 8s linear infinite; animation: layer-1 8s linear infinite; }
+.printer-layers span:nth-child(2) { bottom: 18.2%; left: 28.84%; width: 42.32%; background: #2f7de1; transform-origin: right center; -webkit-animation: layer-2 8s linear infinite; animation: layer-2 8s linear infinite; }
+.printer-layers span:nth-child(3) { bottom: 22%; left: 31.14%; width: 37.72%; background: #2f7de1; transform-origin: left center; -webkit-animation: layer-3 8s linear infinite; animation: layer-3 8s linear infinite; }
+.printer-layers span:nth-child(4) { bottom: 25.8%; left: 32.98%; width: 34.04%; background: #3a9a5b; transform-origin: right center; -webkit-animation: layer-4 8s linear infinite; animation: layer-4 8s linear infinite; }
+.printer-layers span:nth-child(5) { bottom: 29.6%; left: 34.36%; width: 31.28%; background: #3a9a5b; transform-origin: left center; -webkit-animation: layer-5 8s linear infinite; animation: layer-5 8s linear infinite; }
+.printer-layers span:nth-child(6) { bottom: 33.4%; left: 35.74%; width: 28.52%; background: #f4c430; transform-origin: right center; -webkit-animation: layer-6 8s linear infinite; animation: layer-6 8s linear infinite; }
+.printer-layers span:nth-child(7) { bottom: 37.2%; left: 38.5%; width: 23%; background: #f4c430; transform-origin: left center; -webkit-animation: layer-7 8s linear infinite; animation: layer-7 8s linear infinite; }
+.printer-layers span:nth-child(8) { bottom: 41%; left: 42.64%; width: 14.72%; background: var(--primary); transform-origin: right center; -webkit-animation: layer-8 8s linear infinite; animation: layer-8 8s linear infinite; }
+
+/* The carriage line is the nozzle tip. It steps up one layer at a time. */
+.printer-carriage {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 62%;
+  height: 0;
+  -webkit-animation: carriage 8s linear infinite;
+  animation: carriage 8s linear infinite;
+}
+
+.printer-rail {
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  bottom: 25px;
+  height: 10px;
+  background: #8a909b;
+}
+
+.printer-head {
+  position: absolute;
+  bottom: 10px;
   left: 50%;
-  transform: translateX(-50%);
-  width: 46%;
-  display: flex;
-  flex-direction: column-reverse;
-  align-items: center;
+  width: 40px;
+  height: 40px;
+  margin-left: -20px;
+  border-radius: 8px;
+  background: var(--primary);
+  -webkit-animation: head 8s linear infinite;
+  animation: head 8s linear infinite;
 }
 
-.printer-object span {
-  display: block;
-  height: 14px;
-  margin-top: 2px;
-  border-radius: 4px;
-  background: #2f7de1;
-  opacity: 0;
-  animation: layer 8s infinite;
+/* Nozzle: a 10px triangle whose point is exactly on the carriage line */
+.printer-head::after {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  margin-left: -7px;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-top: 10px solid #555;
 }
 
-.printer-object span:nth-child(1) { width: 100%; animation-delay: 0s; }
-.printer-object span:nth-child(2) { width: 92%; animation-delay: 0.6s; }
-.printer-object span:nth-child(3) { width: 82%; animation-delay: 1.2s; }
-.printer-object span:nth-child(4) { width: 74%; animation-delay: 1.8s; background: #3a9a5b; }
-.printer-object span:nth-child(5) { width: 68%; animation-delay: 2.4s; background: #3a9a5b; }
-.printer-object span:nth-child(6) { width: 62%; animation-delay: 3s; background: #f4c430; }
-.printer-object span:nth-child(7) { width: 50%; animation-delay: 3.6s; background: #f4c430; }
-.printer-object span:nth-child(8) { width: 32%; animation-delay: 4.2s; background: var(--primary); }
-
-@keyframes layer {
-  0% { opacity: 0; transform: scaleX(0.6); }
-  4%, 85% { opacity: 1; transform: scaleX(1); }
-  100% { opacity: 0; }
+@-webkit-keyframes carriage {
+  0%, 5.6% { bottom: 17.8%; }
+  6%, 11.6% { bottom: 21.6%; }
+  12%, 17.6% { bottom: 25.4%; }
+  18%, 23.6% { bottom: 29.2%; }
+  24%, 29.6% { bottom: 33%; }
+  30%, 35.6% { bottom: 36.8%; }
+  36%, 41.6% { bottom: 40.6%; }
+  42%, 47.6% { bottom: 44.4%; }
+  53%, 92% { bottom: 62%; }
+  100% { bottom: 17.8%; }
 }
-
-@keyframes gantry {
-  0% { top: 76%; }
-  60%, 85% { top: 44%; }
-  100% { top: 76%; }
+@keyframes carriage {
+  0%, 5.6% { bottom: 17.8%; }
+  6%, 11.6% { bottom: 21.6%; }
+  12%, 17.6% { bottom: 25.4%; }
+  18%, 23.6% { bottom: 29.2%; }
+  24%, 29.6% { bottom: 33%; }
+  30%, 35.6% { bottom: 36.8%; }
+  36%, 41.6% { bottom: 40.6%; }
+  42%, 47.6% { bottom: 44.4%; }
+  53%, 92% { bottom: 62%; }
+  100% { bottom: 17.8%; }
 }
-
+@-webkit-keyframes head {
+  0% { left: 27%; }
+  5.6% { left: 73%; }
+  6% { left: 71.16%; }
+  11.6% { left: 28.84%; }
+  12% { left: 31.14%; }
+  17.6% { left: 68.86%; }
+  18% { left: 67.02%; }
+  23.6% { left: 32.98%; }
+  24% { left: 34.36%; }
+  29.6% { left: 65.64%; }
+  30% { left: 64.26%; }
+  35.6% { left: 35.74%; }
+  36% { left: 38.5%; }
+  41.6% { left: 61.5%; }
+  42% { left: 57.36%; }
+  47.6% { left: 42.64%; }
+  53%, 92% { left: 50%; }
+  100% { left: 27%; }
+}
 @keyframes head {
-  from { left: 22%; }
-  to { left: 64%; }
+  0% { left: 27%; }
+  5.6% { left: 73%; }
+  6% { left: 71.16%; }
+  11.6% { left: 28.84%; }
+  12% { left: 31.14%; }
+  17.6% { left: 68.86%; }
+  18% { left: 67.02%; }
+  23.6% { left: 32.98%; }
+  24% { left: 34.36%; }
+  29.6% { left: 65.64%; }
+  30% { left: 64.26%; }
+  35.6% { left: 35.74%; }
+  36% { left: 38.5%; }
+  41.6% { left: 61.5%; }
+  42% { left: 57.36%; }
+  47.6% { left: 42.64%; }
+  53%, 92% { left: 50%; }
+  100% { left: 27%; }
+}
+@-webkit-keyframes layer-1 {
+  0% { opacity: 1; transform: scaleX(0); }
+  5.6%, 92% { opacity: 1; transform: scaleX(1); }
+  97%, 100% { opacity: 0; transform: scaleX(1); }
+}
+@keyframes layer-1 {
+  0% { opacity: 1; transform: scaleX(0); }
+  5.6%, 92% { opacity: 1; transform: scaleX(1); }
+  97%, 100% { opacity: 0; transform: scaleX(1); }
+}
+@-webkit-keyframes layer-2 {
+  0%, 5.99% { opacity: 0; transform: scaleX(0); }
+  6% { opacity: 1; transform: scaleX(0); }
+  11.6%, 92% { opacity: 1; transform: scaleX(1); }
+  97%, 100% { opacity: 0; transform: scaleX(1); }
+}
+@keyframes layer-2 {
+  0%, 5.99% { opacity: 0; transform: scaleX(0); }
+  6% { opacity: 1; transform: scaleX(0); }
+  11.6%, 92% { opacity: 1; transform: scaleX(1); }
+  97%, 100% { opacity: 0; transform: scaleX(1); }
+}
+@-webkit-keyframes layer-3 {
+  0%, 11.99% { opacity: 0; transform: scaleX(0); }
+  12% { opacity: 1; transform: scaleX(0); }
+  17.6%, 92% { opacity: 1; transform: scaleX(1); }
+  97%, 100% { opacity: 0; transform: scaleX(1); }
+}
+@keyframes layer-3 {
+  0%, 11.99% { opacity: 0; transform: scaleX(0); }
+  12% { opacity: 1; transform: scaleX(0); }
+  17.6%, 92% { opacity: 1; transform: scaleX(1); }
+  97%, 100% { opacity: 0; transform: scaleX(1); }
+}
+@-webkit-keyframes layer-4 {
+  0%, 17.99% { opacity: 0; transform: scaleX(0); }
+  18% { opacity: 1; transform: scaleX(0); }
+  23.6%, 92% { opacity: 1; transform: scaleX(1); }
+  97%, 100% { opacity: 0; transform: scaleX(1); }
+}
+@keyframes layer-4 {
+  0%, 17.99% { opacity: 0; transform: scaleX(0); }
+  18% { opacity: 1; transform: scaleX(0); }
+  23.6%, 92% { opacity: 1; transform: scaleX(1); }
+  97%, 100% { opacity: 0; transform: scaleX(1); }
+}
+@-webkit-keyframes layer-5 {
+  0%, 23.99% { opacity: 0; transform: scaleX(0); }
+  24% { opacity: 1; transform: scaleX(0); }
+  29.6%, 92% { opacity: 1; transform: scaleX(1); }
+  97%, 100% { opacity: 0; transform: scaleX(1); }
+}
+@keyframes layer-5 {
+  0%, 23.99% { opacity: 0; transform: scaleX(0); }
+  24% { opacity: 1; transform: scaleX(0); }
+  29.6%, 92% { opacity: 1; transform: scaleX(1); }
+  97%, 100% { opacity: 0; transform: scaleX(1); }
+}
+@-webkit-keyframes layer-6 {
+  0%, 29.99% { opacity: 0; transform: scaleX(0); }
+  30% { opacity: 1; transform: scaleX(0); }
+  35.6%, 92% { opacity: 1; transform: scaleX(1); }
+  97%, 100% { opacity: 0; transform: scaleX(1); }
+}
+@keyframes layer-6 {
+  0%, 29.99% { opacity: 0; transform: scaleX(0); }
+  30% { opacity: 1; transform: scaleX(0); }
+  35.6%, 92% { opacity: 1; transform: scaleX(1); }
+  97%, 100% { opacity: 0; transform: scaleX(1); }
+}
+@-webkit-keyframes layer-7 {
+  0%, 35.99% { opacity: 0; transform: scaleX(0); }
+  36% { opacity: 1; transform: scaleX(0); }
+  41.6%, 92% { opacity: 1; transform: scaleX(1); }
+  97%, 100% { opacity: 0; transform: scaleX(1); }
+}
+@keyframes layer-7 {
+  0%, 35.99% { opacity: 0; transform: scaleX(0); }
+  36% { opacity: 1; transform: scaleX(0); }
+  41.6%, 92% { opacity: 1; transform: scaleX(1); }
+  97%, 100% { opacity: 0; transform: scaleX(1); }
+}
+@-webkit-keyframes layer-8 {
+  0%, 41.99% { opacity: 0; transform: scaleX(0); }
+  42% { opacity: 1; transform: scaleX(0); }
+  47.6%, 92% { opacity: 1; transform: scaleX(1); }
+  97%, 100% { opacity: 0; transform: scaleX(1); }
+}
+@keyframes layer-8 {
+  0%, 41.99% { opacity: 0; transform: scaleX(0); }
+  42% { opacity: 1; transform: scaleX(0); }
+  47.6%, 92% { opacity: 1; transform: scaleX(1); }
+  97%, 100% { opacity: 0; transform: scaleX(1); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -522,7 +680,7 @@ textarea {
     animation: none !important;
     transition: none !important;
   }
-  .printer-object span {
+  .printer-layers span {
     opacity: 1;
   }
   html {

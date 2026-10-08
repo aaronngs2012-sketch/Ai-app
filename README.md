@@ -61,6 +61,10 @@ To receive submissions directly, create a form endpoint (e.g. [Formspree](https:
 
 For real card payments, connect a provider such as Stripe Payment Links, Shopify Buy Button or Snipcart.
 
+## Updating the site
+
+GitHub Pages and browsers keep copies of files for a few minutes. Run `./bump-version.sh` before committing changes to `css/` or `js/`. It gives the file links in `index.html` a new `?v=` number, so visitors get the new files straight away.
+
 ## Deploy
 
 Any static host works: GitHub Pages (Settings → Pages → deploy from this branch), Netlify or Vercel.
