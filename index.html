@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=202610091629">
+  <link rel="stylesheet" href="css/styles.css?v=202610091846">
 </head>
 <body>
   <!-- Shown only if the page's script never finishes loading (removed by js/app.js). -->
@@ -29,6 +29,7 @@
         <a href="#custom" data-nav="custom">Custom</a>
         <a href="#cart" data-nav="cart" id="cart-tab">Cart <span class="nav-count" data-cart-count hidden>0</span></a>
         <a href="#orders" data-nav="orders">Orders</a>
+        <a href="#contact" data-nav="contact">Contact</a>
       </nav>
     </div>
   </header>
@@ -40,13 +41,8 @@
         <div class="container hero-inner">
           <div class="hero-copy">
             <p class="eyebrow">Printed layer by layer, finished by hand</p>
-            <h1>Useful, fun &amp; one-of-a-kind <span class="accent">3D printed</span> goods.</h1>
+            <h1 class="sr-only">Modlify 3D prints</h1>
             <p class="lead lead-spaced">Browse ready-to-ship designs or design your own custom print. Pick the size, material and colour, and we'll make it for you.</p>
-            <ul class="hero-stats">
-              <li><strong>4</strong><span>colours</span></li>
-              <li><strong>3–5 day</strong><span>turnaround</span></li>
-              <li><strong>0.1 mm</strong><span>layer detail</span></li>
-            </ul>
           </div>
           <div class="hero-art" aria-hidden="true">
             <div class="printer">
@@ -61,86 +57,6 @@
         </div>
       </section>
 
-      <section class="section">
-        <div class="container">
-          <div class="section-head">
-            <div>
-              <p class="eyebrow">Customer favourites</p>
-              <h2>Featured prints</h2>
-            </div>
-          </div>
-          <div class="product-grid" id="featured-grid"></div>
-        </div>
-      </section>
-
-      <section class="section" id="contact">
-        <div class="container">
-          <div class="section-head">
-            <div>
-              <p class="eyebrow">Get in touch</p>
-              <h2>Contact &amp; hours</h2>
-            </div>
-          </div>
-          <div class="contact-layout">
-            <div class="panel contact-ways">
-              <h3>Message us</h3>
-              <p class="cart-meta">Message any time Sunday to Friday. We're closed on Saturday, so please don't message that day.</p>
-              <div class="contact-row">
-                <span class="contact-label">Email</span>
-                <span class="contact-value" id="contact-email-main"></span>
-              </div>
-              <div class="contact-row" id="contact-phone-row" hidden>
-                <span class="contact-label">Phone</span>
-                <span class="contact-value" id="contact-phone"></span>
-                <div class="button-row">
-                  <a class="btn btn-small" id="contact-text" href="#">Text</a>
-                  <a class="btn btn-small btn-buy" id="contact-call" href="#">Call</a>
-                </div>
-              </div>
-            </div>
-            <div class="panel">
-              <h3>Opening hours</h3>
-              <table class="hours">
-                <thead><tr><th scope="col">Day</th><th scope="col">Messages</th><th scope="col">Calls</th></tr></thead>
-                <tbody id="hours-body"></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="section section-alt" id="faq">
-        <div class="container narrow">
-          <div class="section-head center">
-            <div>
-              <p class="eyebrow">Questions?</p>
-              <h2>Frequently asked</h2>
-            </div>
-          </div>
-          <div class="faq">
-            <details>
-              <summary>What materials do you print with?</summary>
-              <p>Mostly PLA (great all-rounder), PETG (stronger and heat resistant), TPU (flexible and rubbery) and resin (very fine detail for miniatures and jewellery). Not sure which you need? Pick “Not sure” on the custom form and we'll advise.</p>
-            </details>
-            <details>
-              <summary>How long does shipping take?</summary>
-              <p>Shop items ship within 1–2 business days. Custom items typically ship 3–5 business days after we confirm your order.</p>
-            </details>
-            <details>
-              <summary>How is a custom item priced?</summary>
-              <p>The custom form shows an estimated price based on size, material, finish and quantity. We check every custom order and email you if the final price is different before you pay.</p>
-            </details>
-            <details>
-              <summary>Where can I see what I ordered?</summary>
-              <p>Open the Orders tab. It lists every order and quote request you've placed on this device, with the items, prices and date.</p>
-            </details>
-            <details>
-              <summary>What is your returns policy?</summary>
-              <p>Shop items can be returned within 30 days in original condition. Custom items are made to order and can't be returned, but if something arrives damaged we'll reprint it free.</p>
-            </details>
-          </div>
-        </div>
-      </section>
     </div>
 
     <!-- ===== Shop ===== -->
@@ -405,6 +321,45 @@
       </section>
     </div>
 
+    <!-- ===== Contact ===== -->
+    <div class="view" data-view="contact" hidden>
+      <section class="section">
+        <div class="container">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Get in touch</p>
+              <h2>Contact &amp; hours</h2>
+            </div>
+          </div>
+          <div class="contact-layout">
+            <div class="panel contact-ways">
+              <h3>Message us</h3>
+              <p class="cart-meta">Message any time Sunday to Friday. We're closed on Saturday, so please don't message that day.</p>
+              <div class="contact-row">
+                <span class="contact-label">Email</span>
+                <span class="contact-value" id="contact-email-main"></span>
+              </div>
+              <div class="contact-row" id="contact-phone-row" hidden>
+                <span class="contact-label">Phone</span>
+                <span class="contact-value" id="contact-phone"></span>
+                <div class="button-row">
+                  <a class="btn btn-small" id="contact-text" href="#">Text</a>
+                  <a class="btn btn-small btn-buy" id="contact-call" href="#">Call</a>
+                </div>
+              </div>
+            </div>
+            <div class="panel">
+              <h3>Opening hours</h3>
+              <table class="hours">
+                <thead><tr><th scope="col">Day</th><th scope="col">Messages</th><th scope="col">Calls</th></tr></thead>
+                <tbody id="hours-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
     <!-- ===== Shop owner (not in the tab bar) ===== -->
     <div class="view" data-view="manage" hidden>
       <section class="section">
@@ -524,15 +479,9 @@
                 <span class="label">Colours available</span>
                 <div class="chip-group" id="p-colors"></div>
               </div>
-              <div class="field-row">
-                <div class="field">
-                  <label for="p-badge">Badge <span class="optional">(optional)</span></label>
-                  <input id="p-badge" name="badge" maxlength="16" placeholder="e.g. New">
-                </div>
-                <div class="field">
-                  <span class="label">Home page</span>
-                  <label class="check"><input type="checkbox" id="p-featured" name="featured" value="yes"> Show in Featured prints</label>
-                </div>
+              <div class="field">
+                <label for="p-badge">Badge <span class="optional">(optional)</span></label>
+                <input id="p-badge" name="badge" maxlength="16" placeholder="e.g. New">
               </div>
               <div class="button-row">
                 <button class="btn btn-primary" type="submit" id="editor-save">Save product</button>
@@ -577,14 +526,13 @@
         <a href="#shop">All products</a>
         <a href="#custom">Custom items</a>
         <a href="#orders">Your orders</a>
-        <a href="#faq">Shipping &amp; returns</a>
       </div>
       <div>
         <h4>Contact</h4>
         <p class="contact-email" id="contact-email">aaronngs2012@gmail.com</p>
         <p class="contact-email" id="footer-phone" hidden></p>
         <p class="footer-hours" id="footer-hours"></p>
-        <a href="#contact">Opening hours</a>
+        <a href="#contact">Contact &amp; hours</a>
       </div>
     </div>
     <div class="container footer-bottom">
@@ -635,7 +583,7 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-  <script src="js/products.js?v=202610091629"></script>
-  <script src="js/app.js?v=202610091629"></script>
+  <script src="js/products.js?v=202610091846"></script>
+  <script src="js/app.js?v=202610091846"></script>
 </body>
 </html>

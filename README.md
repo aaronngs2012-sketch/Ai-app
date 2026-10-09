@@ -4,9 +4,10 @@ A static storefront for selling 3D printed items, with a dedicated **custom orde
 
 ## Features
 
-The site has five tabs across the top: **Home**, **Shop**, **Custom**, **Cart** and **Orders**.
+The site has six tabs across the top: **Home**, **Shop**, **Custom**, **Cart**, **Orders** and **Contact**.
 
-- **Home**: featured products, a link to custom items, and the FAQ
+- **Home**: the banner (printer animation or the owner's photo) and a short intro
+- **Contact**: email, phone (once set) and opening hours
 - **Shop**: product grid with category filters, search and sorting; tap a product for details, colour and quantity
 - **Custom**: a form to design a custom item (name, description, files, size, quantity, material, colour, finish, deadline) with a live price that adds the item straight to the cart
 - **Cart**: every item with its description, chosen options and price, plus the checkout form

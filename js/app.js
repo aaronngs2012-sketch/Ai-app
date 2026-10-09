@@ -160,7 +160,7 @@ function startShop(published) {
   var VIEWS = $$("[data-view]").map(function (v) {
     return v.dataset.view;
   });
-  var VIEW_TITLES = { home: "Home", shop: "Shop", custom: "Custom Items", cart: "Cart", orders: "Orders", manage: "Shop Owner" };
+  var VIEW_TITLES = { home: "Home", shop: "Shop", custom: "Custom Items", cart: "Cart", orders: "Orders", contact: "Contact", manage: "Shop Owner" };
   var baseTitle = document.title;
 
   function jumpToTop() {
@@ -282,16 +282,10 @@ function startShop(published) {
     $("#product-grid").innerHTML = list.map(cardHtml).join("");
   }
 
-  function renderFeatured() {
-    // Owner-chosen featured items, or items with a badge if none were chosen.
-    var featured = PRODUCTS.filter(function (p) { return p.featured === true || (p.featured === undefined && p.badge); }).slice(0, 4);
-    $("#featured-grid").innerHTML = featured.map(cardHtml).join("");
-  }
 
   function renderShop() {
     renderFilters();
     renderProducts();
-    renderFeatured();
   }
 
   $("#filters").addEventListener("click", function (e) {
@@ -334,7 +328,6 @@ function startShop(published) {
     }
   }
   $("#product-grid").addEventListener("click", onGridClick);
-  $("#featured-grid").addEventListener("click", onGridClick);
 
   /* ---------- Modals ---------- */
   var lastFocus = null;
@@ -1119,7 +1112,6 @@ function startShop(published) {
     $("#p-desc").value = p ? p.description : "";
     $("#p-specs").value = p ? (p.specs || []).join("\n") : "";
     $("#p-badge").value = p && p.badge ? p.badge : "";
-    $("#p-featured").checked = p ? p.featured === true || (p.featured === undefined && !!p.badge) : false;
     var colors = p ? productColors(p) : [Object.keys(COLORS)[0]];
     $$("[name=colors]", productForm).forEach(function (el) {
       el.checked = colors.indexOf(el.value) >= 0;
@@ -1176,7 +1168,6 @@ function startShop(published) {
     p.description = d.description;
     p.specs = (d.specs || "").split("\n").map(function (x) { return x.trim(); }).filter(Boolean);
     p.colors = colors;
-    p.featured = $("#p-featured").checked;
     if (d.badge) p.badge = d.badge;
     else delete p.badge;
     var adding = !editingId;
