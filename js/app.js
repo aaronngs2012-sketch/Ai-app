@@ -491,6 +491,16 @@ function startShop(published) {
   function shipping(sub) {
     return sub === 0 || sub >= STORE.freeShippingOver ? 0 : STORE.flatShipping;
   }
+  // Sales tax on items only, for orders shipped within STORE.salesTax.state.
+  function taxFor(sub, state) {
+    var t = STORE.salesTax;
+    if (!t || !t.rate || state !== t.state) return 0;
+    return Math.round(sub * t.rate * 100) / 100;
+  }
+  function chosenState() {
+    var el = $("#co-state");
+    return el ? el.value : "";
+  }
   function itemCount() {
     return cart.reduce(function (s, l) { return s + (l.kind === "custom" ? 1 : l.qty); }, 0);
   }
@@ -572,7 +582,12 @@ function startShop(published) {
     var ship = shipping(sub);
     $("#cart-subtotal").textContent = fmt(sub);
     $("#cart-shipping").textContent = ship === 0 && sub > 0 ? "Free" : fmt(ship);
-    $("#cart-total").textContent = fmt(sub + ship);
+    var state = chosenState();
+    var tax = taxFor(sub, state);
+    var taxState = STORE.salesTax && STORE.salesTax.state;
+    $("#cart-tax-label").textContent = state === taxState ? STORE.salesTax.label : "Sales tax";
+    $("#cart-tax").textContent = !state ? "Choose your state" : tax ? fmt(tax) : "$0.00";
+    $("#cart-total").textContent = fmt(sub + ship + tax);
     var remaining = STORE.freeShippingOver - sub;
     $("#ship-note").textContent =
       sub === 0 ? "" : remaining > 0 ? "Add " + fmt(remaining) + " more for free shipping." : "You've unlocked free shipping!";
@@ -691,8 +706,9 @@ function startShop(published) {
         '<div class="totals">' +
         "<div><span>Subtotal</span><span>" + fmt(o.subtotal) + "</span></div>" +
         "<div><span>Shipping</span><span>" + (o.shipping === 0 ? "Free" : fmt(o.shipping)) + "</span></div>" +
+        (o.tax ? "<div><span>" + esc(o.taxLabel || "Sales tax") + "</span><span>" + fmt(o.tax) + "</span></div>" : "") +
         '<div class="total"><span>Total</span><span>' + fmt(o.total) + "</span></div></div>" +
-        '<p class="cart-meta">Shipping to ' + esc(o.customer.name) + ", " + esc(o.customer.address) + "</p>" +
+        '<p class="cart-meta">Shipping to ' + esc(o.customer.name) + ", " + esc(o.customer.address) + (o.customer.state ? ", " + esc(o.customer.state) : "") + "</p>" +
         (canPayNow(o) ? '<a class="btn btn-primary btn-block" href="' + esc(paypalLink(o.total)) + '" target="_blank" rel="noopener">Pay ' + fmt(o.total) + " with PayPal</a>" : "") +
         "</article>"
       );
@@ -701,12 +717,14 @@ function startShop(published) {
 
   /* ---------- Checkout ---------- */
   var checkoutForm = $("#checkout-form");
+  $("#co-state").addEventListener("change", renderCart);
   checkoutForm.addEventListener("submit", function (e) {
     e.preventDefault();
     if (!cart.length || !validate(checkoutForm)) return;
     var data = formValues(checkoutForm);
     var sub = subtotal();
     var ship = shipping(sub);
+    var tax = taxFor(sub, data.state);
     var order = {
       number: newOrderNumber(),
       date: new Date().toISOString(),
@@ -717,7 +735,9 @@ function startShop(published) {
       }),
       subtotal: sub,
       shipping: ship,
-      total: sub + ship,
+      tax: tax,
+      taxLabel: tax ? STORE.salesTax.label : "",
+      total: Math.round((sub + ship + tax) * 100) / 100,
       customer: data,
     };
     var btn = checkoutForm.querySelector("button[type=submit]");
@@ -726,11 +746,13 @@ function startShop(published) {
       name: data.name,
       email: data.email,
       address: data.address,
+      state: data.state,
       notes: data.notes || "None",
       items: order.items.map(function (it) {
         return (it.custom ? "[Custom] " : it.qty + " x ") + it.name + " (" + it.details.join(", ") + ") — " + fmt(it.total);
       }).join("\n"),
       shipping: fmt(ship),
+      sales_tax: fmt(tax),
       total: fmt(order.total),
     })
       .then(function (how) {

@@ -10,6 +10,9 @@
 var STORE = {
   currency: "USD",
   flatShipping: 6.5,
+  // Sales tax charged on items (not shipping) for orders shipped within this state.
+  // Florida 6% + Miami-Dade County 1% surtax = 7%.
+  salesTax: { state: "FL", rate: 0.07, label: "Florida sales tax (7%)" },
   freeShippingOver: 60,
   contactEmail: "aaronngs2012@gmail.com",
   // Phone for calls and texts. The owner can also set this on the Shop owner page.

@@ -17,6 +17,10 @@ The site has five tabs across the top: **Home**, **Shop**, **Custom**, **Cart** 
   - add or delete products
   - change the home page banner picture
 
+### Sales tax
+
+Checkout asks for the customer's state. Orders shipped within `STORE.salesTax.state` (Florida) get `STORE.salesTax.rate` (7%: 6% state plus Miami-Dade's 1% surtax) on the items, not on shipping. The tax appears in the cart, the order email, the Orders tab and the PayPal amount.
+
 ### Getting paid
 
 Under the owner PIN, **Get paid** stores the owner's PayPal.me name (never card details). Once it's published, checkout for shop-only orders shows a **Pay with PayPal** button that opens `paypal.me/<name>/<total>USD`, and each order in the Orders tab has the same link. Orders that include custom items don't get the button; the owner confirms the price by email first.
