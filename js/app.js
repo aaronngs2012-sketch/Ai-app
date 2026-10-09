@@ -805,7 +805,7 @@ function startShop(published) {
 
   /* ---------- Custom item form ---------- */
   var customForm = $("#custom-form");
-  var SIZE_BASE = { xs: 2, s: 4, m: 8, l: 15, xl: 25 };
+  var SIZE_BASE = { xs: 7, s: 9, m: 13, l: 15, xl: 25 };
   var MATERIAL_MULT = { pla: 1, petg: 1.1, tpu: 1.25, resin: 1.4, unsure: 1 };
   var MATERIAL_NAMES = { pla: "PLA", petg: "PETG", tpu: "TPU", resin: "Resin", unsure: "Material: advise me" };
   var FINISH_MULT = { standard: 1, sanded: 1.15, painted: 1.35 };
