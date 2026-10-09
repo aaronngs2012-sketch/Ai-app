@@ -815,7 +815,8 @@ function startShop(published) {
     Object.keys(COLORS).map(function (k) { return '<option value="' + k + '">' + COLORS[k].name + "</option>"; }).join("") +
     '<option value="multi">Multi-colour</option>';
 
-  // Multi-colour prints cost MULTI_PRICE per colour on each item, for 2 to MULTI_MAX colours.
+  // Multi-colour prints: the first colour is free and each extra colour adds MULTI_PRICE
+  // per item (2 colours +$5, 3 +$10, 4 +$15), for 2 to MULTI_MAX colours.
   var MULTI_PRICE = 5;
   var MULTI_MAX = 4;
   $("#c-multi").innerHTML = Object.keys(COLORS).map(function (k) {
@@ -857,7 +858,7 @@ function startShop(published) {
     var discount = qty >= 50 ? 0.8 : qty >= 10 ? 0.9 : 1;
     var fee = DESIGN_FEE[type] || 0;
     var colors = isMulti() ? multiColors().length : 0;
-    var colorExtra = colors * MULTI_PRICE * qty;
+    var colorExtra = colors >= 2 ? (colors - 1) * MULTI_PRICE * qty : 0;
     var price = Math.max(2, Math.round(SIZE_BASE[size] * MATERIAL_MULT[material] * FINISH_MULT[finish] * qty * discount + fee + colorExtra));
     return { qty: qty, material: material, price: price, discount: discount, fee: fee, colors: colors, colorExtra: colorExtra };
   }
@@ -942,7 +943,7 @@ function startShop(published) {
       "Qty " + q.qty,
       MATERIAL_NAMES[q.material],
       isMulti()
-        ? "Colours: " + multiColors().map(function (k) { return COLORS[k].name; }).join(", ") + " (+" + fmt(q.colors * MULTI_PRICE) + " per item)"
+        ? "Colours: " + multiColors().map(function (k) { return COLORS[k].name; }).join(", ") + " (+" + fmt((q.colors - 1) * MULTI_PRICE) + " per item)"
         : selectedText("c-color"),
       selectedText("c-finish").replace(/\s*\(.*\)$/, "") + " finish",
     ];
