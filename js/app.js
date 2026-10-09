@@ -815,6 +815,32 @@ function startShop(published) {
     Object.keys(COLORS).map(function (k) { return '<option value="' + k + '">' + COLORS[k].name + "</option>"; }).join("") +
     '<option value="multi">Multi-colour</option>';
 
+  // Multi-colour prints cost MULTI_PRICE per colour on each item, for 2 to MULTI_MAX colours.
+  var MULTI_PRICE = 5;
+  var MULTI_MAX = 4;
+  $("#c-multi").innerHTML = Object.keys(COLORS).map(function (k) {
+    return '<label class="chip chip-color"><input type="checkbox" name="multicolor" value="' + k + '">' +
+      '<span><i style="background:' + COLORS[k].hex + '"></i>' + COLORS[k].name + "</span></label>";
+  }).join("");
+  function multiColors() {
+    return $$("#c-multi input:checked").map(function (el) { return el.value; });
+  }
+  function isMulti() {
+    return $("#c-color").value === "multi";
+  }
+  function toggleMulti() {
+    $("#c-multi-field").hidden = !isMulti();
+    if (!isMulti()) setError($("#c-multi-field"), "");
+  }
+  $("#c-color").addEventListener("change", toggleMulti);
+  $("#c-multi").addEventListener("change", function (e) {
+    if (multiColors().length > MULTI_MAX) {
+      e.target.checked = false;
+      toast("You can pick up to " + MULTI_MAX + " colours.");
+    }
+    if (multiColors().length >= 2) setError($("#c-multi-field"), "");
+  });
+
   function selectedText(id) {
     var el = $("#" + id);
     return el.selectedIndex >= 0 ? el.options[el.selectedIndex].text : "";
@@ -830,8 +856,10 @@ function startShop(published) {
     var type = $("#c-type").value;
     var discount = qty >= 50 ? 0.8 : qty >= 10 ? 0.9 : 1;
     var fee = DESIGN_FEE[type] || 0;
-    var price = Math.max(2, Math.round(SIZE_BASE[size] * MATERIAL_MULT[material] * FINISH_MULT[finish] * qty * discount + fee));
-    return { qty: qty, material: material, price: price, discount: discount, fee: fee };
+    var colors = isMulti() ? multiColors().length : 0;
+    var colorExtra = colors * MULTI_PRICE * qty;
+    var price = Math.max(2, Math.round(SIZE_BASE[size] * MATERIAL_MULT[material] * FINISH_MULT[finish] * qty * discount + fee + colorExtra));
+    return { qty: qty, material: material, price: price, discount: discount, fee: fee, colors: colors, colorExtra: colorExtra };
   }
 
   function updateEstimate() {
@@ -845,6 +873,8 @@ function startShop(published) {
     var notes = [q.qty === 1 ? "For 1 item" : "For " + q.qty + " items"];
     if (q.discount < 1) notes.push(Math.round((1 - q.discount) * 100) + "% bulk discount");
     if (q.fee) notes.push("includes " + fmt(q.fee) + " design time");
+    if (isMulti() && q.colors < 2) notes.push("pick at least 2 colours");
+    else if (q.colors) notes.push("includes " + fmt(q.colorExtra) + " for " + q.colors + " colours");
     notes.push("we confirm the final price before you pay");
     $("#estimate-note").textContent = notes.join(" · ") + ".";
   }
@@ -893,7 +923,13 @@ function startShop(published) {
 
   customForm.addEventListener("submit", function (e) {
     e.preventDefault();
-    if (!validate(customForm)) return;
+    var ok = validate(customForm);
+    if (isMulti() && multiColors().length < 2) {
+      setError($("#c-multi-field"), "Pick at least 2 colours for a multi-colour print.");
+      if (ok) $("#c-multi input").focus();
+      ok = false;
+    }
+    if (!ok) return;
     if (chosenFiles().some(function (f) { return f.size > MAX_FILE; })) {
       toast("One of your files is over 25 MB. Remove it and email it to us instead.");
       return;
@@ -905,7 +941,9 @@ function startShop(published) {
       "Size: " + selectedText("c-size"),
       "Qty " + q.qty,
       MATERIAL_NAMES[q.material],
-      selectedText("c-color"),
+      isMulti()
+        ? "Colours: " + multiColors().map(function (k) { return COLORS[k].name; }).join(", ") + " (+" + fmt(q.colors * MULTI_PRICE) + " per item)"
+        : selectedText("c-color"),
       selectedText("c-finish").replace(/\s*\(.*\)$/, "") + " finish",
     ];
     if (d.deadline) details.push("Needed by " + d.deadline);
@@ -916,7 +954,7 @@ function startShop(published) {
       description: d.description,
       details: details,
       price: q.price,
-      color: COLORS[d.color] ? d.color : Object.keys(COLORS)[0],
+      color: COLORS[d.color] ? d.color : multiColors()[0] || Object.keys(COLORS)[0],
     });
     showMessage(
       "Added to your cart",
@@ -929,6 +967,7 @@ function startShop(published) {
       ]
     );
     customForm.reset();
+    toggleMulti();
     renderFiles();
     updateEstimate();
   });
