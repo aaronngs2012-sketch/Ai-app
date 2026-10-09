@@ -805,11 +805,11 @@ function startShop(published) {
 
   /* ---------- Custom item form ---------- */
   var customForm = $("#custom-form");
-  var SIZE_BASE = { xs: 6, s: 12, m: 25, l: 45, xl: 80 };
-  var MATERIAL_MULT = { pla: 1, petg: 1.2, tpu: 1.4, resin: 1.6, unsure: 1.1 };
+  var SIZE_BASE = { xs: 2, s: 4, m: 8, l: 15, xl: 25 };
+  var MATERIAL_MULT = { pla: 1, petg: 1.1, tpu: 1.25, resin: 1.4, unsure: 1 };
   var MATERIAL_NAMES = { pla: "PLA", petg: "PETG", tpu: "TPU", resin: "Resin", unsure: "Material: advise me" };
-  var FINISH_MULT = { standard: 1, sanded: 1.25, painted: 1.6 };
-  var DESIGN_FEE = { design: 30, part: 15 };
+  var FINISH_MULT = { standard: 1, sanded: 1.15, painted: 1.35 };
+  var DESIGN_FEE = { design: 10, part: 5 };
 
   $("#c-color").innerHTML =
     Object.keys(COLORS).map(function (k) { return '<option value="' + k + '">' + COLORS[k].name + "</option>"; }).join("") +
@@ -830,7 +830,7 @@ function startShop(published) {
     var type = $("#c-type").value;
     var discount = qty >= 50 ? 0.8 : qty >= 10 ? 0.9 : 1;
     var fee = DESIGN_FEE[type] || 0;
-    var price = Math.round(SIZE_BASE[size] * MATERIAL_MULT[material] * FINISH_MULT[finish] * qty * discount + fee);
+    var price = Math.max(2, Math.round(SIZE_BASE[size] * MATERIAL_MULT[material] * FINISH_MULT[finish] * qty * discount + fee));
     return { qty: qty, material: material, price: price, discount: discount, fee: fee };
   }
 
