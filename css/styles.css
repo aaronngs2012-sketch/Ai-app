@@ -938,7 +938,7 @@ textarea {
   top: calc(var(--header-h) + 24px);
 }
 
-.custom-intro > p {
+.custom-intro > p:not(.eyebrow) {
   color: var(--muted);
   font-size: 1.05rem;
 }
